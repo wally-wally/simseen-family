@@ -9,7 +9,8 @@ export default new Vuex.Store({
     todayElements: new Date().toLocaleDateString().split('.').splice(0, 3),
     bibleCheckDayValue: null,
     dinnerCheckDayValue: null,
-    notices: []
+    lastDinnerCheckDayValue: null,
+    dayOfTheWeek: ['일', '월', '화', '수', '목', '금', '토']
   },
   mutations: {
     convertDateValue(state, payload) {
@@ -18,8 +19,10 @@ export default new Vuex.Store({
       let day = checkDayElements[2].trim().length === 1 ? '0' + checkDayElements[2].trim() : checkDayElements[2].trim()
       if (payload.componentName === 'Bible') {
         state.bibleCheckDayValue = Number(checkDayElements[0] + month + day)
-      } else {
+      } else if (payload.componentName === 'Dinner') {
         state.dinnerCheckDayValue = Number(checkDayElements[0] + month + day)
+      } else {
+        state.lastDinnerCheckDayValue = [checkDayElements[0], month, day].join('-')
       }
     }
   },
