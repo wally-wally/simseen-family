@@ -4,6 +4,8 @@ import 'firebase/auth'
 
 const DINNER = 'dinner'
 const BIBLE = 'bible'
+const NOTICE = 'notice'
+
 const API_KEY = process.env.VUE_APP_FIREBASE_API_KEY
 const DATABASE_URL = process.env.VUE_APP_FIREBASE_DATABASE_URL
 const MESSAGINGSENDERID = process.env.VUE_APP_FIREBASE_MESSAGINGSENDERID
@@ -48,6 +50,19 @@ export default {
 					return docSnapshots.docs.map((doc) => {
 						let data = doc.data()
 						data.date = new Date(data.date.toDate())
+						return data
+					})
+				})
+	},
+	getNotice() {
+		const noticeCollection = firestore.collection(NOTICE)
+		return noticeCollection
+				.orderBy('created_at', 'desc')
+				.get()
+				.then((docSnapshots) => {				
+					return docSnapshots.docs.map((doc) => {
+						let data = doc.data()
+						data.created_at = new Date(data.created_at.toDate())
 						return data
 					})
 				})
