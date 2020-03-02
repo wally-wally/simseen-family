@@ -1,7 +1,7 @@
 <template>
   <div class="mx-4 my-5">
     <div class="dinner-title">
-      <i class="fas fa-utensils"></i>영숙이의 급식소
+      <i class="fas fa-utensils"></i>
     </div>
     <div class="dinner-content">
       <v-row justify="center">
@@ -86,10 +86,14 @@ export default {
 
 <style scoped>
   .dinner-title {
-    font-family: 'Yeon Sung';
     font-weight: bold;
     font-size: 18px;
     margin: 8px 0;
+  }
+
+  .dinner-title .fas::after {
+    content: '영숙이의 급식소';
+    font-family: 'Yeon Sung';
   }
 
   .dinner-select {

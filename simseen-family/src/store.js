@@ -8,7 +8,8 @@ export default new Vuex.Store({
     todayDate: new Date(),
     todayElements: new Date().toLocaleDateString().split('.').splice(0, 3),
     bibleCheckDayValue: null,
-    dinnerCheckDayValue: null
+    dinnerCheckDayValue: null,
+    notices: []
   },
   mutations: {
     convertDateValue(state, payload) {

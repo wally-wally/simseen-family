@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Content from '@/views/Content'
+import Main from '@/views/Main'
+import NoticePage from '@/views/NoticePage'
 
 Vue.use(Router)
 
@@ -11,8 +12,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'content',
-      component: Content
+      name: 'main',
+      component: Main
+    },
+    {
+      path: '/notice',
+      name: 'notice',
+      component: NoticePage
     }
   ]
 })

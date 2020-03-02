@@ -1,7 +1,7 @@
 <template>
   <div class="ma-4">
     <div class="bible-title">
-      <i class="fas fa-bible"></i>금주의 성경암송
+      <i class="fas fa-bible"></i>
     </div>
     <div class="bible-content">
       <div class="bible-body">{{ thisWeekBible.body }}</div>
@@ -46,10 +46,14 @@ export default {
 
 <style scoped>
   .bible-title {
-    font-family: 'Yeon Sung';
     font-weight: bold;
     font-size: 18px;
     margin-bottom: 8px;
+  }
+
+  .bible-title .fas::after {
+    content: '금주의 성경암송';
+    font-family: 'Yeon Sung';
   }
 
   .bible-content {
