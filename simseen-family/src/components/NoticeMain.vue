@@ -1,21 +1,17 @@
 <template>
   <div class="notice-main-content">
     <div class="notice-main-header d-flex justify-space-between">
-      <div class="notice-main-title">{{ recentlyNotice.title }}</div>
-      <div class="notice-main-user">by {{ recentlyNotice.user }}</div>
+      <div class="notice-main-title">{{ notices[0].title }}</div>
+      <div class="notice-main-user">by {{ notices[0].user }}</div>
     </div>
-    <div class="notice-main-body">{{ recentlyNotice.body }}</div>
+    <div class="notice-main-body">{{ notices[0].body }}</div>
   </div>
 </template>
 
 <script>
 export default {
   name: 'NoticeMain',
-  data() {
-    return  {
-      recentlyNotice: this.$store.state.notices[0]
-    }
-  }
+  props: ['notices']
 }
 </script>
 

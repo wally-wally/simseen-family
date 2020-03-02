@@ -28,15 +28,15 @@ firebase.initializeApp(firebaseConfig)
 const firestore = firebase.firestore()
 
 export default {
-	getDinner() {
-		const dinnerCollection = firestore.collection(DINNER)
-		return dinnerCollection
-				.orderBy('date', 'asc')
+	getNotice() {
+		const noticeCollection = firestore.collection(NOTICE)
+		return noticeCollection
+				.orderBy('created_at', 'desc')
 				.get()
-				.then((docSnapshots) => {					
+				.then((docSnapshots) => {				
 					return docSnapshots.docs.map((doc) => {
 						let data = doc.data()
-						data.date = new Date(data.date.toDate())
+						data.created_at = new Date(data.created_at.toDate())
 						return data
 					})
 				})
@@ -54,15 +54,15 @@ export default {
 					})
 				})
 	},
-	getNotice() {
-		const noticeCollection = firestore.collection(NOTICE)
-		return noticeCollection
-				.orderBy('created_at', 'desc')
+	getDinner() {
+		const dinnerCollection = firestore.collection(DINNER)
+		return dinnerCollection
+				.orderBy('date', 'desc')
 				.get()
-				.then((docSnapshots) => {				
+				.then((docSnapshots) => {					
 					return docSnapshots.docs.map((doc) => {
 						let data = doc.data()
-						data.created_at = new Date(data.created_at.toDate())
+						data.date = new Date(data.date.toDate())
 						return data
 					})
 				})

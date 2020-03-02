@@ -8,8 +8,8 @@
         <i class="fas fa-plus"></i>
       </div>
     </div>
-    <NoticeMain v-if="this.$route.name === 'main'"></NoticeMain>
-    <NoticeTable v-else></NoticeTable>
+    <NoticeMain v-if="this.$route.name === 'main'" :notices="notices"></NoticeMain>
+    <NoticeTable v-else :notices="notices"></NoticeTable>
   </div>
 </template>
 
@@ -24,12 +24,17 @@ export default {
     NoticeMain,
     NoticeTable
   },
+  data() {
+    return {
+      notices: []
+    }
+  },
   mounted() {
     this.getNotice()
   },
   methods: {
     async getNotice() {
-      this.$store.state.notices = await FirebaseService.getNotice()
+      this.notices = await FirebaseService.getNotice()
     }
   }
 }

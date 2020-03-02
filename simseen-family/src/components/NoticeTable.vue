@@ -25,9 +25,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 export default {
   name: 'NoticeTable',
+  props: ['notices'],
   data() {
     return {
       tableHeaders: [
@@ -35,12 +35,9 @@ export default {
         { text: '작성자', value: 'user' },
       ],
       page: 1,
-      pageCount: parseInt(this.$store.state.notices.length / 5),
+      pageCount: parseInt(this.notices.length / 5),
       itemsPerPage: 5
     }
-  },
-  computed: {
-    ...mapState(['notices'])
   }
 }
 </script>
