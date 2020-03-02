@@ -4,16 +4,21 @@ import 'firebase/auth'
 
 const DINNER = 'dinner'
 const BIBLE = 'bible'
+const API_KEY = process.env.VUE_APP_FIREBASE_API_KEY
+const DATABASE_URL = process.env.VUE_APP_FIREBASE_DATABASE_URL
+const MESSAGINGSENDERID = process.env.VUE_APP_FIREBASE_MESSAGINGSENDERID
+const APP_ID = process.env.VUE_APP_FIREBASE_APP_ID
+const MEASUREMENTID = process.env.VUE_APP_FIREBASE_MEASUREMENTID
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD8HZeiV2xRzIXuAjaz7Iy0vGON29aSIsY",
+  apiKey: API_KEY,
   authDomain: "simseen-family.firebaseapp.com",
-  databaseURL: "https://simseen-family.firebaseio.com",
+  databaseURL: DATABASE_URL,
   projectId: "simseen-family",
   storageBucket: "simseen-family.appspot.com",
-  messagingSenderId: "106251777097",
-  appId: "1:106251777097:web:f18393b28102df8a6a3b98",
-  measurementId: "G-M8T1Z7847Z"
+  messagingSenderId: MESSAGINGSENDERID,
+  appId: APP_ID,
+  measurementId: MEASUREMENTID
 }
 
 firebase.initializeApp(firebaseConfig)
