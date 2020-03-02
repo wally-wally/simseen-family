@@ -66,5 +66,13 @@ export default {
 						return data
 					})
 				})
-	}
+	},
+	postNotice(title, user, body) {
+		return firestore.collection(NOTICE).add({
+			title,
+			user,
+			body,
+			created_at: firebase.firestore.FieldValue.serverTimestamp()
+		})
+	},
 }
