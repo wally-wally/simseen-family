@@ -14,7 +14,11 @@
       class="elevation-1">
       <template v-slot:expanded-item="{ headers, item }">
         <td class="pa-4" :colspan="headers.length">
-          <div style="line-height: 24px;">{{ item.body }}</div>
+          <p class="text-center" v-if="item.imgUrl !== ''">
+            <img :src="item.imgUrl" alt="notice-img" id="notice-img" style="margin-left: auto; margin-right: auto; display: block;">
+          </p>
+          <hr v-if="item.imgUrl !== ''">
+          <div class="mt-2" style="line-height: 24px;">{{ item.body }}</div>
         </td>
       </template>
     </v-data-table>
@@ -41,3 +45,21 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  @media (orientation: portrait) {
+    p > img[id="notice-img"] {
+      display: block;
+      margin: 0 auto;
+      width: 70%;
+    }
+  }
+
+  @media (orientation: landscape) {
+    p > img[id="notice-img"] {
+      display: block;
+      margin: 0 auto;
+      width: 50%;
+    }
+  }
+</style>
