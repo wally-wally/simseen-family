@@ -26,7 +26,6 @@ AOS.init()
 new Vue({
   router,
   store,
-
   vuetify: new Vuetify({
     iconfont: 'fa',
     theme: {
@@ -35,8 +34,10 @@ new Vue({
         accent: '#8c9eff',
         error: '#b71c1c'
     }
-}),
-
+  }),
+  beforeCreate() {
+    this.$store.dispatch('getMemberInfo')
+  },
   // vuetify,
   render: h => h(App)
 }).$mount('#app')

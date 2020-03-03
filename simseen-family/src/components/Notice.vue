@@ -2,9 +2,9 @@
   <div class="ma-4">
     <div class="notice-title">
       <div class="notice-title-body">
-        <i class="fas fa-clipboard-list"></i>
+        <i class="fas fa-clipboard-list"><span v-if="this.$route.name === 'main'"> 최근</span></i>
       </div>
-      <div class="notice-add-icon" @click="dialog = true">
+      <div class="notice-add-icon" @click="dialog = true" v-if="this.$store.state.familyAuth">
         <i class="fas fa-plus"></i>
       </div>
     </div>
@@ -21,12 +21,6 @@
               :counter="10"
               :rules="titleRules"
               required></v-text-field>
-            <v-select
-              v-model="user"
-              :items="users"
-              label="작성자"
-              :rules="[v => !!v || '이름을 선택하세요.']"
-              dense></v-select>
             <v-textarea
               v-model="body"
               :counter="0"
@@ -44,7 +38,7 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-    <NoticeMain v-if="this.$route.name === 'main'" :notices="notices"></NoticeMain>
+    <NoticeMain v-if="this.$route.name === 'main'" :notices="notices" :loadingState="loadingState"></NoticeMain>
     <NoticeTable v-else :notices="notices"></NoticeTable>
   </div>
 </template>
@@ -71,8 +65,6 @@ export default {
         v => !!v || '제목을 작성하세요.',
         v => (v && v.length <= 10) || '최대 10자까지 작성 가능합니다.'
       ],
-      user: '',
-      users: ['심의진', '김영숙', '심규현', '심예은'],
       body: '',
       bodyRules: [
         v => !!v || '내용을 작성하세요.',
@@ -80,7 +72,8 @@ export default {
       ],
       imgFile: undefined,
       imgUrl: '',
-      waitingMessage: ''
+      waitingMessage: '',
+      loadingState: 0
     }
   },
   mounted() {
@@ -88,9 +81,27 @@ export default {
   },
   methods: {
     async getNotice() {
-      this.notices = await FirebaseService.getNotice()
+      this.loadingState = 0
+      let noticeData = await FirebaseService.getNotice()
+      let noticeCnt = noticeData.length
+      this.notices = noticeData.slice(0, noticeCnt - 1)
+      this.$store.state.lastNoticeIndex = Number(this.notices[0].noticeIdx)
+      this.loadingState = 1
+      this.$refs.form.inputs.forEach(function(component) {
+        component.errorBucket = []
+      })
     },
     async postNotice() {
+      let vm = this
+      const initialNoticeForm = function() {
+        vm.getNotice()
+        vm.dialog = false
+        vm.title = null
+        vm.body = null
+        vm.imgFile = undefined
+        vm.imgUrl = null
+        vm.waitingMessage = ''
+      }
       this.waitingMessage = '조금만 기다려주세요.'
       if (this.imgFile !== null && this.imgFile !== '' && this.imgFile !== undefined) {
         const formData = new FormData()
@@ -105,17 +116,13 @@ export default {
             this.imgUrl = response.data.data.link
             this.waitingMessage = '사진 업로드 중...'
             if (response.status === 200) {
-              FirebaseService.postNotice(this.title, this.user, this.body, this.imgUrl)
-              let vm = this
-              const goMain = function() {
-                vm.$router.go('/')
-              }
-              setTimeout(goMain, 2000)
+              FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, this.imgUrl)
+              setTimeout(initialNoticeForm, 2000)
             }
           })
       } else {
-        await FirebaseService.postNotice(this.title, this.user, this.body, '')
-        this.$router.go('/')
+        await FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, '')
+        setTimeout(initialNoticeForm, 500)
       }
     }
   },
@@ -140,7 +147,11 @@ export default {
   }
 
   .notice-title .notice-title-body .fas::after {
-    content: '공지사항';
+    content: ' 공지사항';
+    font-family: 'Yeon Sung';
+  }
+
+  .notice-title .notice-title-body span {
     font-family: 'Yeon Sung';
   }
 
