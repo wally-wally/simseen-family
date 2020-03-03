@@ -67,11 +67,12 @@ export default {
 					})
 				})
 	},
-	postNotice(title, user, body) {
+	postNotice(title, user, body, imgUrl) {
 		return firestore.collection(NOTICE).add({
 			title,
 			user,
 			body,
+			imgUrl,
 			created_at: firebase.firestore.FieldValue.serverTimestamp()
 		})
 	},

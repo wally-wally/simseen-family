@@ -4,7 +4,12 @@
       <div class="notice-main-title">{{ notices[0].title }}</div>
       <div class="notice-main-user">by {{ notices[0].user }}</div>
     </div>
-    <div class="notice-main-body">{{ notices[0].body }}</div>
+    <div class="notice-main-body">
+      <p class="text-center" v-if="notices[0].imgUrl !== ''">
+        <img :src="notices[0].imgUrl" class="d-block" alt="notice-img" id="notice-img">
+      </p>
+      {{ notices[0].body }}
+    </div>
   </div>
 </template>
 
@@ -39,5 +44,19 @@ export default {
     border-top: 1px solid #E9D644;
     padding: 8px;
     font-size: 14px;
+  }
+
+  @media (orientation: portrait) {
+    p > img[id="notice-img"] {
+      margin: 0 auto;
+      width: 80%;
+    }
+  }
+
+  @media (orientation: landscape) {
+    p > img[id="notice-img"] {
+      margin: 0 auto;
+      width: 60%;
+    }
   }
 </style>

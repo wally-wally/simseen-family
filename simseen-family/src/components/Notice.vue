@@ -18,7 +18,7 @@
             <v-text-field
               v-model="title"
               label="제목"
-              :counter="20"
+              :counter="10"
               :rules="titleRules"
               required></v-text-field>
             <v-select
@@ -33,7 +33,9 @@
               :rules="bodyRules"
               required
               label="내용"></v-textarea>
+            <v-file-input accept="image/*" label="사진 첨부(선택)" v-model="imgFile" dense clearable></v-file-input>
             <v-card-actions>
+              <span class="alert-section">{{ waitingMessage }}</span>
               <v-spacer></v-spacer>
               <v-btn small color="#E6CC00" :disabled="!valid" @click="postNotice()">작성</v-btn>
               <v-btn small color="error" @click="dialog = false">취소</v-btn>
@@ -48,6 +50,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 import FirebaseService from '@/services/FirebaseService'
 import NoticeMain from '@/components/NoticeMain'
 import NoticeTable from '@/components/NoticeTable'
@@ -66,15 +69,18 @@ export default {
       title: '',
       titleRules: [
         v => !!v || '제목을 작성하세요.',
-        v => (v && v.length <= 20) || '최대 20자까지 작성 가능합니다.'
+        v => (v && v.length <= 10) || '최대 10자까지 작성 가능합니다.'
       ],
       user: '',
       users: ['심의진', '김영숙', '심규현', '심예은'],
       body: '',
       bodyRules: [
         v => !!v || '내용을 작성하세요.',
-        v => (v && v.length >= 20) || '최소 20자 이상 작성해야 합니다.'
-      ]
+        v => (v && v.length >= 10) || '최소 10자 이상 작성해야 합니다.'
+      ],
+      imgFile: undefined,
+      imgUrl: '',
+      waitingMessage: ''
     }
   },
   mounted() {
@@ -85,8 +91,37 @@ export default {
       this.notices = await FirebaseService.getNotice()
     },
     async postNotice() {
-      await FirebaseService.postNotice(this.title, this.user, this.body)
-      this.$router.go('/')
+      this.waitingMessage = '조금만 기다려주세요.'
+      if (this.imgFile !== null && this.imgFile !== '' && this.imgFile !== undefined) {
+        const formData = new FormData()
+        const requestHeaders = {
+          headers: {
+            Authorization: process.env.VUE_APP_IMGUR_CLIENT_ID
+          }
+        }
+        formData.append('image', this.imgFile)
+        axios.post('https://api.imgur.com/3/image', formData, requestHeaders)
+          .then(response => {
+            this.imgUrl = response.data.data.link
+            this.waitingMessage = '사진 업로드 중...'
+            if (response.status === 200) {
+              FirebaseService.postNotice(this.title, this.user, this.body, this.imgUrl)
+              let vm = this
+              const goMain = function() {
+                vm.$router.go('/')
+              }
+              setTimeout(goMain, 2000)
+            }
+          })
+      } else {
+        await FirebaseService.postNotice(this.title, this.user, this.body, '')
+        this.$router.go('/')
+      }
+    }
+  },
+  watch: {
+    valid() {
+      this.waitingMessage = this.valid ? "'작성' 버튼을 눌러주세요." : ''
     }
   }
 }
@@ -133,5 +168,10 @@ export default {
     font-weight: 600;
     font-family: 'Poor Story';
     color: black;
+  }
+
+  .alert-section {
+    font-size: 13px;
+    font-family: 'Poor Story';
   }
 </style>
