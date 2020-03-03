@@ -52,7 +52,7 @@ export default {
   }
 
   .bible-title .fas::after {
-    content: '금주의 성경암송';
+    content: ' 금주의 성경암송';
     font-family: 'Yeon Sung';
   }
 

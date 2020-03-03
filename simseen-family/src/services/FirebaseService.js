@@ -1,7 +1,9 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
+import store from '../store'
 
+const EMAILS = 'emails'
 const DINNER = 'dinner'
 const BIBLE = 'bible'
 const NOTICE = 'notice'
@@ -28,10 +30,21 @@ firebase.initializeApp(firebaseConfig)
 const firestore = firebase.firestore()
 
 export default {
+	getEmail() {
+		const emailCollection = firestore.collection(EMAILS)
+		return emailCollection
+				.get()
+				.then((docSnapshots) => {
+					return docSnapshots.docs.map((doc) => {
+						let data = doc.data()
+						return data
+					})
+				})
+	},
 	getNotice() {
 		const noticeCollection = firestore.collection(NOTICE)
 		return noticeCollection
-				.orderBy('created_at', 'desc')
+				.orderBy('noticeIdx', 'desc')
 				.get()
 				.then((docSnapshots) => {				
 					return docSnapshots.docs.map((doc) => {
@@ -67,13 +80,34 @@ export default {
 					})
 				})
 	},
-	postNotice(title, user, body, imgUrl) {
-		return firestore.collection(NOTICE).add({
+	postNotice(title, user, userEmail, body, imgUrl) {
+		let noticeIdx = store.state.lastNoticeIndex
+		let noticeDocument = firestore.collection(NOTICE).doc((noticeIdx + 1).toString())
+		return noticeDocument.set({
 			title,
 			user,
+			userEmail,
 			body,
 			imgUrl,
+			noticeIdx,
 			created_at: firebase.firestore.FieldValue.serverTimestamp()
 		})
 	},
+	deleteNotice(index) {
+		const deleteMessage = confirm('정말로 삭제하시겠습니까?')
+		if (deleteMessage) {
+			const noticeCollection = firestore.collection(NOTICE)
+			noticeCollection.doc((index + 1).toString()).delete()
+		}
+	},
+	loginWithGoogle() {
+		let provider = new firebase.auth.GoogleAuthProvider()
+		return firebase.auth().signInWithPopup(provider).then(function(result) {
+			// let accessToken = result.credential.accessToken
+			// let user = result.user
+			return result
+		}).catch(function(error) {
+			console.error('[Google Login Error]', error)
+		})
+	}
 }

@@ -32,9 +32,10 @@
       <v-row justify="center">
         <v-date-picker
           v-model="pickedDate"
-          class="mx-3 my-2"
+          class="mx-3 my-2 dinner-calender"
           full-width
           :landscape="$vuetify.breakpoint.sm"
+          locale="ko"
           color="#E6CC00"
         ></v-date-picker>
       </v-row>
@@ -138,7 +139,7 @@ export default {
   }
 
   .dinner-title .dinner-title-body .fas::after {
-    content: '영숙이의 급식소';
+    content: ' 영숙이의 급식소';
     font-family: 'Yeon Sung';
   }
 
@@ -159,6 +160,10 @@ export default {
     font-family: 'Gaegu';
     font-size: 18px;
     color: #7a7a7a;
+  }
+
+  .dinner-calender {
+    font-family: 'Noto Sans KR';
   }
 
   .menu-dialog-title {
