@@ -4,10 +4,9 @@
       <span class="homepage-name">Simpson Family</span>
     </router-link>
     <div v-if="user !== '' && user !== 'a'" class="login-name">{{ user }}<i class="fas fa-star" v-if="familyAuth"></i></div>
-    <div v-else class="login-name">Guest</div>
     <v-spacer></v-spacer>
     <nav class="nav">
-      <router-link to="/notice"><i class="fas fa-clipboard-list notice-icon"></i></router-link>
+      <router-link v-if="familyAuth" to="/notice"><i class="fas fa-clipboard-list notice-icon"></i></router-link>
       <span v-if="!isLogin" class="google-login-icon" @click="loginWithGoogle"><i class="fab fa-google"></i></span>
       <span v-if="isLogin" class="google-logout-icon" @click="logoutDialog = true"><i class="fab fa-google"></i></span>
     </nav>
@@ -44,7 +43,6 @@ export default {
     ...mapActions(['loginWithGoogle', 'logout']),
     runLogout() {
       this.logout()
-      alert('로그아웃 되었습니다.')
       this.logoutDialog = false
     }
   },

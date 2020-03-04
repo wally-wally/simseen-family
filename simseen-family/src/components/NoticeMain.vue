@@ -9,9 +9,7 @@
         <p class="text-center" v-if="notices[0].imgUrl !== ''">
           <img :src="notices[0].imgUrl" class="d-block" alt="notice-img" id="notice-img">
         </p>
-        <div class="text-justify">
-          {{ notices[0].body }}
-        </div>
+        <div class="text-justify" v-html="this.notices[0].body.split('\n').join('<br />')"></div>
       </div>
     </div>
     <div v-else class="no-notice-section">

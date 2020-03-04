@@ -81,8 +81,8 @@ export default {
 				})
 	},
 	postNotice(title, user, userEmail, body, imgUrl) {
-		let noticeIdx = store.state.lastNoticeIndex
-		let noticeDocument = firestore.collection(NOTICE).doc((noticeIdx + 1).toString())
+		let noticeIdx = store.state.lastNoticeIndex + 1
+		let noticeDocument = firestore.collection(NOTICE).doc(noticeIdx.toString())
 		return noticeDocument.set({
 			title,
 			user,
@@ -93,12 +93,21 @@ export default {
 			created_at: firebase.firestore.FieldValue.serverTimestamp()
 		})
 	},
+	updateNotice(noticeIdx, title, user, userEmail, body, imgUrl, created_at) {
+		let noticeDocument = firestore.collection(NOTICE).doc(noticeIdx.toString())
+		return noticeDocument.set({
+			noticeIdx,
+			title,
+			user,
+			userEmail,
+			body,
+			imgUrl,
+			created_at
+		})
+	},
 	deleteNotice(index) {
-		const deleteMessage = confirm('정말로 삭제하시겠습니까?')
-		if (deleteMessage) {
-			const noticeCollection = firestore.collection(NOTICE)
-			noticeCollection.doc((index + 1).toString()).delete()
-		}
+		const noticeCollection = firestore.collection(NOTICE)
+		noticeCollection.doc(index.toString()).delete()
 	},
 	loginWithGoogle() {
 		let provider = new firebase.auth.GoogleAuthProvider()
