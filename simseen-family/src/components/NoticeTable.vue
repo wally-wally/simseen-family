@@ -5,7 +5,7 @@
       :items="notices"
       :items-per-page="itemsPerPage"
       :page.sync="page"
-      item-key="created_at"
+      item-key="noticeIdx"
       hide-default-footer
       @page-count="pageCount = $event"
       @click:row="showNoticeDetail($event)"
@@ -25,7 +25,7 @@
       <v-card>
         <v-card-title class="pa-4 d-flex justify-space-between">
           <div class="notice-detail-title">{{ selectNotice.title }}</div>
-          <div class="notice-detail-user">by{{ selectNotice.user }}</div>
+          <div class="notice-detail-user">by {{ selectNotice.user }}</div>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pa-4" id="notice-card">
@@ -33,14 +33,31 @@
             <img :src="selectNotice.imgUrl" alt="notice-img" id="notice-img" style="margin-left: auto; margin-right: auto; display: block;">
           </p>
           <hr class="mb-2" v-if="selectNotice.imgUrl !== ''">
-          <div class="notice-detail-body">{{ selectNotice.body }}</div>
+          <div class="notice-detail-body" v-html="selectNoticeBody"></div>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions class="pa-4 notice-detail-buttons">
+          <span></span>
+          <v-spacer></v-spacer>
+          <v-btn small color="#F79F0F" v-if="selectNotice.userEmail === this.$store.state.email" @click="editNoticeDialog(selectNotice)">수정</v-btn>
+          <v-btn small color="error" v-if="selectNotice.userEmail === this.$store.state.email" @click="deleteDialog = true">삭제</v-btn>
+          <v-btn small color="#E6CC00" @click="dialog = false">닫기</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="deleteDialog" persistent>
+      <v-card>
+        <v-card-text class="px-4 pt-4 pb-2" id="notice-card">
+          <p class="text-center" style="font-size: 100px;"><i class="fas fa-trash-alt"></i></p>
+          <p class="text-center mt-6 mb-4" style="font-size: 1.3em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">해당 공지를 삭제하시겠습니까?</p>
+          <p class="text-center" style="font-size: 0.9em; font-family: 'Noto Sans KR'">(하단 <span style="color: #FF5252;">'삭제'</span> 버튼을 누르면 삭제됩니다.)</p>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions class="pa-4">
           <span></span>
           <v-spacer></v-spacer>
-          <v-btn small color="error" v-if="selectNotice.userEmail === this.$store.state.email" @click="deleteNotice(selectNotice.noticeIdx)">삭제</v-btn>
-          <v-btn small color="#E6CC00" @click="dialog = false">닫기</v-btn>
+          <v-btn small color="error" @click="deleteNotice(selectNotice.noticeIdx)">삭제</v-btn>
+          <v-btn small color="#E6CC00" @click="deleteDialog = false">닫기</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -64,20 +81,28 @@ export default {
       ],
       page: 1,
       pageCount: parseInt(this.notices.length / 5),
-      itemsPerPage: 5,
+      itemsPerPage: 4,
       dialog: false,
-      selectNotice: ''
+      deleteDialog: false,
+      selectNotice: '',
+      selectNoticeBody: ''
     }
   },
   methods: {
     showNoticeDetail(notice) {
       this.selectNotice = notice
+      this.selectNoticeBody = notice.body.split('\n').join('<br />')
       this.dialog = true
+    },
+    editNoticeDialog(notice) {
+      this.dialog = false
+      this.$emit('editNotice', notice)
     },
     async deleteNotice(index) {
       await FirebaseService.deleteNotice(index)
       this.dialog = false
-      this.$router.push('/')
+      this.deleteDialog = false
+      this.$emit('getNotice')
     }
   }
 }
@@ -85,20 +110,23 @@ export default {
 
 <style scoped>
   .notice-detail-title {
-    font-family: 'Noto Sans KR';
+    font-family: 'Yeon Sung';
     font-weight: 600;
-    font-size: 0.9em;
   }
 
   .notice-detail-user {
-    font-family: 'Nanum Gothic';
-    font-size: 0.7em;
+    font-family: 'Stylish';
+    font-size: 0.8em;
   }
 
   .notice-detail-body {
-    font-size: 0.9em;
+    font-family: 'Poor Story';
     line-height: 24px;
     text-align: justify;
+  }
+
+  .notice-detail-buttons {
+    font-family: 'Poor Story';
   }
 
   @media (orientation: portrait) {

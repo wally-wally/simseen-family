@@ -11,21 +11,26 @@
     <v-dialog v-model="dialog">
       <v-card>
         <v-card-title><span class="menu-dialog-title">이번주 식단</span></v-card-title>
-        <v-card-text>
-          <div v-for="menuData in weeklyDinnerMenus" :key="menuData" class="dinner-menu-form">
-            <div v-if="menuData.date.getDay() !== 6" :class="menuData.date.getDay() === 0 ? 'sunday-check' : 'dinner-menu-dialog'">
-              {{ menuData.date.toLocaleString().slice(2, 11) }} ({{ dayOfTheWeek[menuData.date.getDay()] }})
+        <v-card-text class="px-6 pb-1">
+          <div v-for="i in weeklyDinnerMenus.length" :key="i" class="dinner-menu-form">
+            <div v-if="weeklyDinnerMenus[i - 1].date.getDay() !== 6" :class="weeklyDinnerMenus[i - 1].date.getDay() === 0 ? 'sunday-check' : 'dinner-menu-dialog'">
+              {{ weeklyDinnerMenus[i - 1].date.toLocaleString().slice(2, 11) }} ({{ dayOfTheWeek[weeklyDinnerMenus[i - 1].date.getDay()] }})
             </div>
             <div v-else class="saturday-check">
-              {{ menuData.date.toLocaleString().slice(2, 11) }} ({{ dayOfTheWeek[menuData.date.getDay()] }})
+              {{ weeklyDinnerMenus[i - 1].date.toLocaleString().slice(2, 11) }} ({{ dayOfTheWeek[weeklyDinnerMenus[i - 1].date.getDay()] }})
             </div>
-            <div class="dinner-select row mt-2">
-              <div class="col-6 py-1" v-for="menu in menuData.menus" :key="`${menu}-1`">
-                <div class="text-center">{{ menu }}</div>
+            <div class="dinner-select row">
+              <div class="dinner-menu-detail col-6" v-for="j in weeklyDinnerMenus[i - 1].menus.length" :key="j">
+                <div class="text-center">{{ weeklyDinnerMenus[i - 1].menus[j - 1] }}</div>
               </div>
             </div>
           </div>
         </v-card-text>
+        <v-card-actions class="pt-0 pb-1 pr-6">
+          <span></span>
+          <v-spacer></v-spacer>
+          <v-btn small color="#E6CC00" @click="dialog = false">닫기</v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
     <div class="dinner-content">
@@ -160,6 +165,11 @@ export default {
     font-family: 'Gaegu';
     font-size: 18px;
     color: #7a7a7a;
+    margin-top: 3px;
+  }
+
+  .dinner-menu-detail {
+    padding: 3px 0;
   }
 
   .dinner-calender {
@@ -175,7 +185,7 @@ export default {
   .dinner-menu-form {
     padding-bottom: 10px;
     border-bottom: 1px solid lightgray;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
 
   .dinner-menu-dialog {
