@@ -36,7 +36,7 @@
               :rules="bodyRules"
               required></v-textarea>
             <v-file-input
-              accept="image/*"
+              accept="image/*;capture=camera"
               name="photo"
               v-if="(editState === 1 && (imgUrl === null || imgUrl === '')) || (showImageInput)"
               v-model="imgFile"
@@ -84,7 +84,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <NoticeMain v-if="this.$route.name === 'main'" :notices="notices" :loadingState="loadingState"></NoticeMain>
+    <NoticeMain v-if="this.$route.name === 'main'" :notice="notices[0]" :loadingState="loadingState"></NoticeMain>
     <NoticeTable v-else :notices="notices" @getNotice="getNotice" @editNotice="editNotice"></NoticeTable>
   </div>
 </template>
