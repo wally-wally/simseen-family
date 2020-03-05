@@ -3,9 +3,15 @@
     <div class="bible-title">
       <i class="fas fa-bible"></i>
     </div>
-    <div class="bible-content">
+    <div v-if="thisWeekBible.length !== 0" class="bible-content">
       <div class="bible-body">{{ thisWeekBible.body }}</div>
       <div class="bible-position text-right">{{ thisWeekBible.position }}</div>
+    </div>
+    <div v-else class="bible-content">
+      <p class="text-center pa-2">
+        <strong v-if="loadingState === 1">등록된 성경구절이 없습니다.</strong>
+        <strong v-else>데이터를 불러오는 중입니다.</strong>
+      </p>
     </div>
   </div>
 </template>
@@ -17,7 +23,8 @@ export default {
   name: 'Bible',
   data() {
     return {
-      thisWeekBible: []
+      thisWeekBible: [],
+      loadingState: 0
     }
   },
   mounted() {
@@ -39,6 +46,7 @@ export default {
           break
         }
       }
+      this.loadingState = 1
     }
   }
 }
@@ -61,7 +69,8 @@ export default {
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.05);
   }
 
-  .bible-content .bible-body {
+  .bible-content .bible-body,
+  .bible-content p {
     border-bottom: 1px solid #E9D644;
     padding: 8px;
     font-size: 14px;

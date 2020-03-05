@@ -37,7 +37,7 @@
               required></v-textarea>
             <v-file-input
               accept="image/*"
-              capture="gallery"
+              name="photo"
               v-if="(editState === 1 && (imgUrl === null || imgUrl === '')) || (showImageInput)"
               v-model="imgFile"
               label="사진 첨부(선택)"
@@ -50,7 +50,7 @@
               dense>
               <div class="reupload-image-alert">
                 <v-chip
-                  class="pa-1"
+                  class="pa-2"
                   color="red"
                   text-color="white"
                   @click="showImageInput = true; imgUrl = ''">여기</v-chip>
