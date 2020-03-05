@@ -1,12 +1,12 @@
 <template>
   <v-app-bar fixed color="#F4F2DB">
     <router-link to="/" style="text-decoration: none;">
-      <span class="homepage-name">Simpson Family</span>
+      <span class="homepage-name" @click="toggleEvent(0)">Simpson Family</span>
     </router-link>
     <div v-if="user !== '' && user !== 'a'" class="login-name">{{ user }}<i class="fas fa-star" v-if="familyAuth"></i></div>
     <v-spacer></v-spacer>
     <nav class="nav">
-      <router-link v-if="familyAuth" to="/notice"><i class="fas fa-clipboard-list notice-icon"></i></router-link>
+      <router-link v-if="familyAuth" to="/notice"><i class="fas fa-clipboard-list notice-icon" @click="toggleEvent(1)"></i></router-link>
       <span v-if="!isLogin" class="google-login-icon" @click="loginWithGoogle"><i class="fab fa-google"></i></span>
       <span v-if="isLogin" class="google-logout-icon" @click="logoutDialog = true"><i class="fab fa-google"></i></span>
     </nav>
@@ -36,14 +36,42 @@ export default {
   name: 'Header',
   data() {
     return {
-      logoutDialog: this.$store.state.logoutDialog
+      logoutDialog: this.$store.state.logoutDialog,
     }
+  },
+  mounted() {
+    this.resetSessionExpire()
   },
 	methods: {
     ...mapActions(['loginWithGoogle', 'logout']),
     runLogout() {
-      this.logout()
+      this.logout(0)
       this.logoutDialog = false
+    },
+    resetSessionExpire() {
+      if (this.isLogin) {
+        this.$store.commit('checkSession')
+        let vm = this
+        if (this.user === '' && vm.$store.state.clickNotice) {
+          vm.$router.push('/')
+        }
+      }
+    },
+    toggleEvent(status) {
+      this.$store.state.clickInit = false
+      if (status === 0) {
+        this.$store.state.clickTitle = true
+        this.$store.state.clickNotice = false
+      } else {
+        this.$store.state.clickTitle = false
+        this.$store.state.clickNotice = true
+      }
+    }
+  },
+  watch: {
+    '$route': 'resetSessionExpire',
+    isLogin() {
+      this.$store.state.oldTime = this.isLogin ? new Date() : ''
     }
   },
   computed: {

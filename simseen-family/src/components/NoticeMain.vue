@@ -5,11 +5,19 @@
         <div class="notice-main-title">{{ notices[0].title }}</div>
         <div class="notice-main-user">by {{ notices[0].user }}</div>
       </div>
-      <div class="notice-main-body">
+      <div v-if="this.$store.state.isLogin && this.$store.state.familyAuth" class="notice-main-body">
         <p class="text-center" v-if="notices[0].imgUrl !== ''">
           <img :src="notices[0].imgUrl" class="d-block" alt="notice-img" id="notice-img">
         </p>
         <div class="text-justify" v-html="this.notices[0].body.split('\n').join('<br />')"></div>
+      </div>
+      <div v-else-if="this.$store.state.isLogin && this.$store.state.checkUser" class="notice-main-body">
+        <p class="text-center" style="font-size: 100px;"><i class="far fa-meh"></i></p>
+        <p class="text-center mt-6 mb-4" style="font-size: 1.3em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">너 어디 집안이야(두둥)</p>
+      </div>
+      <div v-else class="notice-main-body">
+        <p class="text-center" style="font-size: 100px;"><i class="far fa-grin-tongue"></i></p>
+        <p class="text-center mt-6 mb-4" style="font-size: 1.3em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">응, 넌 못 봐^^</p>
       </div>
     </div>
     <div v-else class="no-notice-section">
