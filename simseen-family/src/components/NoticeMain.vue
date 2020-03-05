@@ -1,15 +1,17 @@
 <template>
   <div>
-    <div v-if="this.notices.length !== 0" class="notice-main-content">
+    <div v-if="this.notice !== undefined" class="notice-main-content">
       <div class="notice-main-header d-flex justify-space-between">
-        <div class="notice-main-title">{{ notices[0].title }}</div>
-        <div class="notice-main-user">by {{ notices[0].user }}</div>
+        <div class="notice-main-title">{{ notice.title }}
+          <span class="notice-main-date">{{ notice.created_at | shortedDate }}({{ this.dayOfTheWeek[notice.created_at.getDay()] }})</span>
+        </div>
+        <div class="notice-main-user">by {{ notice.user }}</div>
       </div>
       <div v-if="this.$store.state.isLogin && this.$store.state.familyAuth" class="notice-main-body">
-        <p class="text-center" v-if="notices[0].imgUrl !== ''">
-          <img :src="notices[0].imgUrl" class="d-block" alt="notice-img" id="notice-img">
+        <p class="text-center" v-if="notice.imgUrl !== ''">
+          <img :src="notice.imgUrl" class="d-block" alt="notice-img" id="notice-img" @click="zoomInImg(notice.imgUrl)">
         </p>
-        <div class="text-justify" v-html="this.notices[0].body.split('\n').join('<br />')"></div>
+        <div class="text-justify" v-html="this.notice.body.split('\n').join('<br />')"></div>
       </div>
       <div v-else-if="this.$store.state.isLogin && this.$store.state.checkUser" class="notice-main-body">
         <p class="text-center" style="font-size: 100px;"><i class="far fa-meh"></i></p>
@@ -26,15 +28,51 @@
         <strong v-else>데이터를 불러오는 중입니다.</strong>
       </p>
     </div>
+    <ZoomInImage :zoomInImgUrl="zoomInImgUrl" :zoomInImgDialog="zoomInImgDialog" @closeDialog="closeDialog"></ZoomInImage>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import ZoomInImage from '@/components/ZoomInImage'
+
 export default {
   name: 'NoticeMain',
+  components: {
+    ZoomInImage
+  },
   props: {
-    notices: { type: Array },
+    notice: { type: Object },
     loadingState: { type: Number }
+  },
+  data() {
+    return {
+      zoomInImgDialog: false,
+      zoomInImgUrl: ''
+    }
+  },
+  filters: {
+    shortedDate(created_at) {
+      let year = created_at.getFullYear() - 2000
+      let month = created_at.getMonth() + 1
+      let day = created_at.getDate()
+      return `${year}.${month < 9 ? [0, month].join('') : month}.${day < 9 ? [0, day].join('') : day}`
+    }
+  },
+  methods: {
+    zoomInImg(url) {
+      this.zoomInImgDialog = true
+      this.zoomInImgUrl = url
+      document.querySelector('#viewport').setAttribute('content', 'width=device-width, initial-scale=1.0')
+    },
+    closeDialog() {
+      this.zoomInImgDialog = false
+      this.zoomInImgUrl = ''
+      document.querySelector('#viewport').setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no')
+    }
+  },
+  computed: {
+    ...mapState(['dayOfTheWeek'])
   }
 }
 </script>
@@ -45,6 +83,11 @@ export default {
     background-color: #F4F2DB;
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.05);
     font-family: 'Nanum Gothic';
+  }
+
+  .notice-main-title .notice-main-date {
+    font-size: 11px;
+    vertical-align: bottom;
   }
 
   .notice-main-content .notice-main-header {

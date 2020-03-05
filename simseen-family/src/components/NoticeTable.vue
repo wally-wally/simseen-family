@@ -10,6 +10,9 @@
       @page-count="pageCount = $event"
       @click:row="showNoticeDetail($event)"
       class="elevation-1">
+      <template v-slot:item.created_at="{ item }">
+        {{ item.created_at | shortedDate }}
+      </template>
       <!-- <template v-slot:expanded-item="{ headers, item }">
         <tr ></tr> -->
         <!-- <td class="pa-4" :colspan="headers.length">
@@ -24,13 +27,15 @@
     <v-dialog v-model="dialog">
       <v-card>
         <v-card-title class="pa-4 d-flex justify-space-between">
-          <div class="notice-detail-title">{{ selectNotice.title }}</div>
+          <div class="notice-detail-title">{{ selectNotice.title }}
+            <span class="notice-detail-date">{{ selectNoticeDate }}</span>
+          </div>
           <div class="notice-detail-user">by {{ selectNotice.user }}</div>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pa-4" id="notice-card">
           <p class="text-center" v-if="selectNotice.imgUrl !== ''">
-            <img :src="selectNotice.imgUrl" alt="notice-img" id="notice-img" style="margin-left: auto; margin-right: auto; display: block;">
+            <img :src="selectNotice.imgUrl" alt="notice-img" id="notice-img" style="margin-left: auto; margin-right: auto; display: block;" @click="zoomInImg(selectNotice.imgUrl)">
           </p>
           <hr class="mb-2" v-if="selectNotice.imgUrl !== ''">
           <div class="notice-detail-body" v-html="selectNoticeBody"></div>
@@ -61,6 +66,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <ZoomInImage :zoomInImgUrl="zoomInImgUrl" :zoomInImgDialog="zoomInImgDialog" @closeDialog="closeDialog"></ZoomInImage>
     <div class="text-center pt-2">
       <v-pagination v-model="page" :length="pageCount" :total-visible="7" circle color="#E6CC00"></v-pagination>
     </div>
@@ -68,16 +74,21 @@
 </template>
 
 <script>
+import ZoomInImage from '@/components/ZoomInImage'
 import FirebaseService from '@/services/FirebaseService'
 
 export default {
   name: 'NoticeTable',
+  components: {
+    ZoomInImage
+  },
   props: ['notices'],
   data() {
     return {
       tableHeaders: [
         { text: '제목', value: 'title' },
         { text: '작성자', value: 'user' },
+        { text: '작성일', value: 'created_at' }
       ],
       page: 1,
       pageCount: parseInt(this.notices.length / 5),
@@ -85,13 +96,23 @@ export default {
       dialog: false,
       deleteDialog: false,
       selectNotice: '',
-      selectNoticeBody: ''
+      selectNoticeBody: '',
+      selectNoticeDate: '',
+      zoomInImgDialog: false,
+      zoomInImgUrl: ''
     }
   },
   methods: {
     showNoticeDetail(notice) {
       this.selectNotice = notice
       this.selectNoticeBody = notice.body.split('\n').join('<br />')
+      let noticeCreatedAt = notice.created_at
+      let year = noticeCreatedAt.getFullYear() - 2000
+      let month = noticeCreatedAt.getMonth() + 1
+      let day = noticeCreatedAt.getDate()
+      let dayOfTheWeek = noticeCreatedAt.getDay()
+      let dayOfTheWeeks = this.$store.state.dayOfTheWeek
+      this.selectNoticeDate = `${year}.${month < 9 ? [0, month].join('') : month}.${day < 9 ? [0, day].join('') : day}(${dayOfTheWeeks[dayOfTheWeek]})`
       this.dialog = true
     },
     editNoticeDialog(notice) {
@@ -103,6 +124,24 @@ export default {
       this.dialog = false
       this.deleteDialog = false
       this.$emit('getNotice')
+    },
+    zoomInImg(url) {
+      this.zoomInImgDialog = true
+      this.zoomInImgUrl = url
+      document.querySelector('#viewport').setAttribute('content', 'width=device-width, initial-scale=1.0')
+    },
+    closeDialog() {
+      this.zoomInImgDialog = false
+      this.zoomInImgUrl = ''
+      document.querySelector('#viewport').setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no')
+    }
+  },
+  filters: {
+    shortedDate(created_at) {
+      let year = created_at.getFullYear() - 2000
+      let month = created_at.getMonth() + 1
+      let day = created_at.getDate()
+      return `${year}.${month < 9 ? [0, month].join('') : month}.${day < 9 ? [0, day].join('') : day}`
     }
   }
 }
@@ -112,6 +151,10 @@ export default {
   .notice-detail-title {
     font-family: 'Yeon Sung';
     font-weight: 600;
+  }
+
+  .notice-detail-date {
+    font-size: 12px;
   }
 
   .notice-detail-user {
