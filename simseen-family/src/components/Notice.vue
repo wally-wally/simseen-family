@@ -24,10 +24,13 @@
               :counter="10"
               :rules="titleRules"
               required></v-text-field>
-            <v-card-text v-if="editState === 1 && imgUrl !== null && imgUrl !== ''" class=pa-0>
+            <v-card-text v-if="editState === 1 && imgUrls[0] !== ''" class="pa-0">
               <p class="text-center" v-if="!showImageInput">
-                <img :src="imgUrl" alt="notice-img" id="notice-img">
+                <img v-for="i in imgUrls.length" :key="i" :src="imgUrls[i - 1]" alt="notice-img" id="notice-img">
               </p>
+            </v-card-text>
+            <v-card-text class="pa-0">
+              <div id="image-preview"></div>
             </v-card-text>
             <v-textarea
               v-model="body"
@@ -36,24 +39,29 @@
               :rules="bodyRules"
               required></v-textarea>
             <v-file-input
-              accept="image/*;capture=camera"
+              accept="image/*"
               name="photo"
-              v-if="(editState === 1 && (imgUrl === null || imgUrl === '')) || (showImageInput)"
-              v-model="imgFile"
+              v-if="(editState === 1 && imgUrls[0] === '') || (showImageInput)"
+              v-model="imgFiles"
               label="사진 첨부(선택)"
+              id="photo"
+              :rules="imgRules"
+              :counter="3"
+              multiple
               dense
-              clearable></v-file-input>
+              clearable
+              @click:clear="imageReset"></v-file-input>
             <v-alert
               v-else
               text
               color="warning"
+              class="pa-2"
               dense>
               <div class="reupload-image-alert">
                 <v-chip
-                  class="pa-2"
                   color="red"
                   text-color="white"
-                  @click="showImageInput = true; imgUrl = ''">여기</v-chip>
+                  @click="clearImages">여기</v-chip>
               </div>
             </v-alert>
             <v-card-actions>
@@ -80,7 +88,7 @@
         <v-card-actions class="pa-4">
           <span></span>
           <v-spacer></v-spacer>
-          <v-btn small color="#E6CC00" @click="postDialog = false">닫기</v-btn>
+          <v-btn small color="#E6CC00" @click="togglePostDialog()">닫기</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -114,17 +122,21 @@ export default {
       body: null,
       bodyRules: [
         v => !!v || '내용을 작성하세요.',
-        v => (v && v.length >= 10) || '최소 10자 이상 작성해야 합니다.'
+        v => (v && v.length >= 5) || '최소 5자 이상 작성해야 합니다.'
       ],
       showImageInput: true,
-      imgFile: undefined,
-      imgUrl: null,
+      imgFiles: [],
+      imgUrls: [],
+      imgRules: [
+        v => (v.length <= 3) || '최대 3장까지 첨부할 수 있습니다.'
+      ],
       waitingMessage: '',
       loadingState: 0,
       editState: 0,
       editNoticeInfo: '',
       postDialog: false,
-      postAlert: ''
+      postAlert: '',
+      checkImgUrlCount: 0
     }
   },
   mounted() {
@@ -148,47 +160,82 @@ export default {
     async postNotice(status) {
       let vm = this
       const initialNoticeForm = function() {
-        vm.title = null
-        vm.body = null
-        vm.imgFile = undefined
-        vm.imgUrl = null
-        vm.getNotice()
-        vm.valid = true
-        vm.waitingMessage = ''
-        vm.dialog = false
-        vm.postDialog = true
+        if (vm.imgFiles.length > 0 && vm.checkImgUrlCount !== vm.imgFiles.length) {
+          vm.imgFiles = []
+          vm.imgUrls = []
+          alert('전송 시간이 초과되었습니다. 인터넷 환경이 원활한 곳에서 다시 시도하세요.')
+        } else {
+          vm.title = null
+          vm.body = null
+          vm.imgFiles = []
+          vm.imgUrls = []
+          vm.valid = true
+          vm.waitingMessage = ''
+          vm.dialog = false
+          vm.postDialog = true
+          vm.getNotice()
+        }
       }
       this.waitingMessage = '조금만 기다려주세요.'
       this.postAlert = status === 'post' ? '게시' : '수정'
-      if (this.imgFile !== null && this.imgFile !== '' && this.imgFile !== undefined) {
-        const formData = new FormData()
-        const requestHeaders = {
-          headers: {
-            Authorization: process.env.VUE_APP_IMGUR_CLIENT_ID
-          }
-        }
-        formData.append('image', this.imgFile)
-        axios.post('https://api.imgur.com/3/image', formData, requestHeaders)
-          .then(response => {
-            console.log(status)
-            this.imgUrl = response.data.data.link
-            this.waitingMessage = '사진 업로드 중...'
-            if (response.status === 200) {
-              if (status === 'post') {
-                FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, this.imgUrl)
-              } else {
-                FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, this.imgUrl, this.editNoticeInfo.created_at)
-              }
-              setTimeout(initialNoticeForm, 2000)
-            }
+      if (this.imgFiles.length !== 0) {
+        this.imgFiles.forEach(imgFile => {
+          const formData = new FormData()
+          formData.append('image', imgFile)
+          let vm = this
+          axios.post('https://api.imgur.com/3/image', formData, { headers: { Authorization: process.env.VUE_APP_IMGUR_CLIENT_ID } })
+            .then(response => {
+              vm.imgUrls.push(response.data.data.link)
+              vm.waitingMessage = `사진 업로드 중`
           })
+        })
+        setTimeout(() => {
+          let temp = 0
+          if (this.imgUrls.length >= 1 && this.imgUrls[0] === '') {
+            temp = 1
+            this.checkImgUrlCount = this.imgUrls.length - 1
+          } else {
+            this.checkImgUrlCount = this.imgUrls.length
+          }
+          if (status === 'post') {
+            FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls)
+          } else {
+            FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls, this.editNoticeInfo.created_at)
+          }
+          this.waitingMessage = '조금만 기다려주세요.'
+          setTimeout(initialNoticeForm, 4000 * (this.imgFiles.length + 1.6))
+        }, 4000 * this.imgFiles.length)
+        // axios.post('https://api.imgur.com/3/image', formData, requestHeaders)
+        //   .then(response => {
+        //     console.log(status)
+        //     this.imgUrl = response.data.data.link
+        //     this.waitingMessage = '사진 업로드 중...'
+        //     if (response.status === 200) {
+        //       if (status === 'post') {
+        //         FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, this.imgUrl)
+        //       } else {
+        //         FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, this.imgUrl, this.editNoticeInfo.created_at)
+        //       }
+        //       setTimeout(initialNoticeForm, 2000)
+        //     }
+        //   })
       } else {
-        if (status === 'post') {
-          await FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, '')
+        let temp = 0
+        if (this.imgUrls.length >= 1 && this.imgUrls[0] !== '') {
+          temp = 1
+          this.checkImgUrlCount = this.imgUrls.length - 1
         } else {
-          await FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, this.imgUrl, this.editNoticeInfo.created_at)
+          this.checkImgUrlCount = this.imgUrls.length
         }
-        setTimeout(initialNoticeForm, 500)
+        if (this.imgUrls.length === 0) {
+          this.imgUrls = ['']
+        }
+        if (status === 'post') {
+          await FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls)
+        } else {
+          await FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls, this.editNoticeInfo.created_at)
+        }
+        setTimeout(initialNoticeForm, 3000)
       }
     },
     addNotice() {
@@ -201,12 +248,12 @@ export default {
       this.dialog = true
       this.title = notice.title
       this.body = notice.body
-      if (this.imgUrl !== '') {
+      if (this.imgUrls !== ['']) {
         this.showImageInput = false
-        this.imgUrl = notice.imgUrl
+        this.imgUrls = notice.imgUrl
       } else {
-        this.imgFile = undefined
-        this.imgUrl = null
+        this.imgFiles = []
+        this.imgUrls = []
       }
       this.editNoticeInfo = {
         noticeIdx: notice.noticeIdx,
@@ -214,11 +261,24 @@ export default {
       }
       this.waitingMessage = this.valid ? "'수정' 버튼을 눌러주세요." : ''
     },
+    clearImages() {
+      this.showImageInput = true
+      this.imgUrls = ['']
+    },
+    imageReset() {
+      let imagePreview = document.querySelector('#image-preview')
+      let tempImages = document.querySelectorAll('#img-center-wrapper')
+      tempImages.forEach(tempImage => imagePreview.removeChild(tempImage))
+    },
+    togglePostDialog() {
+      this.postDialog = false
+      this.imageReset()
+    },
     cancelNotice() {
       this.title = null
       this.body = null
-      this.imgFile = undefined
-      this.imgUrl = null
+      this.imgFiles = []
+      this.imgUrls = []
       this.valid = false
       this.waitingMessage = ''
       try {
@@ -233,6 +293,7 @@ export default {
       }
       this.getNotice()
       this.dialog = false
+      this.imageReset()
     }
   },
   watch: {
@@ -241,6 +302,25 @@ export default {
         this.waitingMessage = this.valid ? "'작성' 버튼을 눌러주세요." : ''
       } else {
         this.waitingMessage = this.valid ? "'수정' 버튼을 눌러주세요." : ''
+      }
+    },
+    imgFiles() {
+      let preview = document.querySelector('#image-preview');
+      if (this.imgFiles) {
+        this.imgFiles.forEach(imgFile => {
+          let reader = new FileReader()
+          reader.onload = event => {
+            let imgWrapper = document.createElement('p')
+            imgWrapper.setAttribute('class', 'text-center ma-0')
+            imgWrapper.setAttribute('id', 'img-center-wrapper')
+            let imgTag = document.createElement('img')
+            imgTag.setAttribute('src', event.target.result)
+            imgTag.setAttribute('style', 'display: block; margin: 0 auto; padding: 8px 0; width: 85%;')
+            imgWrapper.appendChild(imgTag)
+            preview.appendChild(imgWrapper)
+          }
+          reader.readAsDataURL(imgFile)
+        })
       }
     }
   }
@@ -305,7 +385,7 @@ export default {
 
   .reupload-image-alert::after {
     content: '를 누르면 사진을 새로 재등록 할 수 있습니다.';
-    letter-spacing: -0.03em;
+    letter-spacing: -0.05em;
   }
 
   @media (orientation: portrait) {

@@ -8,8 +8,12 @@
         <div class="notice-main-user">by {{ notice.user }}</div>
       </div>
       <div v-if="this.$store.state.isLogin && this.$store.state.familyAuth" class="notice-main-body">
-        <p class="text-center" v-if="notice.imgUrl !== ''">
-          <img :src="notice.imgUrl" class="d-block" alt="notice-img" id="notice-img" @click="zoomInImg(notice.imgUrl)">
+        <p class="text-center img-section" v-if="this.notice.imgUrl[0] !== ''">
+          <img :src="this.notice.imgUrl[0]" class="d-block" alt="notice-img" id="notice-img">
+          <v-btn class="mx-2" id="more-img-button" fab dark x-small color="#FFAB00" @click="zoomInImg(notice.imgUrl)">
+            <span v-if="this.notice.imgUrl.length === 1" class="img-more-count"><i class="fas fa-expand"></i></span>
+            <span v-else class="img-more-count">+{{ this.notice.imgUrl.length - 1 }}</span>
+          </v-btn>
         </p>
         <div class="text-justify" v-html="this.notice.body.split('\n').join('<br />')"></div>
       </div>
@@ -107,6 +111,21 @@ export default {
     border-top: 1px solid #E9D644;
     padding: 8px;
     font-size: 14px;
+  }
+
+  .img-section {
+    position: relative;
+  }
+
+  .img-section #more-img-button {
+    position: absolute;
+    bottom: 0;
+    right: -1.1em;
+  }
+
+  .img-section #more-img-button .img-more-count {
+    font-size: 12px;
+    font-family: 'Noto Sans KR';
   }
 
   @media (orientation: portrait) {
