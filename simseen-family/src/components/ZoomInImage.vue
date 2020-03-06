@@ -1,10 +1,13 @@
 <template>
   <v-dialog v-model="zoomInImgDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
     <v-card>
-      <v-card-title class="px-2 pt-2 pb-1"><span class="zoom-in-img-title"><i class="fas fa-expand"></i></span></v-card-title>
+      <v-card-title class="px-2 pt-2 pb-1">
+        <span v-if="this.zoomInImgUrl.length === 1" class="zoom-in-img-title"><i class="fas fa-expand"></i></span>
+        <span v-else class="zoom-in-img-title"><i class="fas fa-search"></i></span>
+      </v-card-title>
       <v-card-text class="px-2 pt-1 pb-2">
-        <p class="text-center ma-0">
-          <img :src="zoomInImgUrl" id="notice-main-zoomin-dialog">
+        <p v-for="i in this.zoomInImgUrl.length" class="text-center mx-0 my-1" :key="i">
+          <img :src="zoomInImgUrl[i - 1]" id="notice-main-zoomin-dialog">
         </p>
       </v-card-text>
       <v-divider></v-divider>
@@ -20,10 +23,7 @@
 <script>
 export default {
   name: 'ZoomInImage',
-  props: {
-    zoomInImgDialog: { type: Boolean },
-    zoomInImgUrl: { type: String }
-  },
+  props: ['zoomInImgDialog', 'zoomInImgUrl'],
   methods: {
     closeDialog() {
       this.$emit('closeDialog')
@@ -33,10 +33,16 @@ export default {
 </script>
 
 <style scoped>
-  .zoom-in-img-title .fas::after {
+  .zoom-in-img-title .fa-expand::after {
     content: ' 이미지 확대';
     font-family: 'Yeon Sung';
   }
+
+  .zoom-in-img-title .fa-search::after {
+    content: ' 모든 이미지 보기';
+    font-family: 'Yeon Sung';
+  }
+
   @media (orientation: portrait) {
     #notice-main-zoomin-dialog {
       margin: 0 auto;

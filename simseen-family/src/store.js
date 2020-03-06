@@ -9,7 +9,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    // accessToken: '',
     user: '',
     email: '',
     isLogin: false,
@@ -34,7 +33,6 @@ export default new Vuex.Store({
     loginSuccess(state, loginInfo) {
       state.isLogin = true
       state.isLoginError = false
-      // state.accessToken = loginInfo[0]
       state.user = loginInfo[0]
       state.email = loginInfo[1]
     },
@@ -46,7 +44,6 @@ export default new Vuex.Store({
       state.isLogin = false
       state.isLoginError = false
       state.user = ''
-      // state.accessToken = ''
       state.email = ''
       state.familyAuth = false
       state.logoutDialog = false
@@ -63,7 +60,6 @@ export default new Vuex.Store({
         sessionStorage.setItem('oldTime', newValue)
         sessionStorage.setItem('newTime', new Date())
       } else {
-        // sessionStorage.removeItem('accessToken')
         sessionStorage.removeItem('userName')
         sessionStorage.removeItem('email')
         sessionStorage.removeItem('oldTime')
@@ -71,7 +67,6 @@ export default new Vuex.Store({
         state.isLogin = false
         state.isLoginError = false
         state.user = ''
-        // state.accessToken = ''
         state.email = ''
         state.familyAuth = false
         state.logoutDialog = false
@@ -94,40 +89,24 @@ export default new Vuex.Store({
       state.familyAuth = Object.entries(state.familyEmails[0].emails)
         .some(user => state.user && user[1] === state.email ? true : false)
       setTimeout(state.checkUser = true, 2000)
-    },
-    // getFirebaseToken(state, payload) {
-    //   let config = {
-    //     headers: {
-    //       'access-token': payload.credential.accessToken
-    //     }
-    //   }
-    //   axios.post(`https://simseen-family.firebaseio.com/users/ada/name.json?access_token=${payload.credential.accessToken}`, config)
-    //     .then(res => {
-    //       console.log(res)
-    //       state.getUserInfo = res
-    //     })
-    // }
+    }
   },
   actions: {
     async loginWithGoogle({dispatch}) {
       const result = await FirebaseService.loginWithGoogle()
-      // sessionStorage.setItem('accessToken', result.credential.accessToken)
       sessionStorage.setItem('userName', result.user.displayName)
       sessionStorage.setItem('email', result.user.email)
       sessionStorage.setItem('oldTime', new Date())
       sessionStorage.setItem('newTime', '')
       dispatch('getMemberInfo')
-      // commit('getFirebaseToken', result)
     },
     logout({commit}) {
-      sessionStorage.removeItem('accessToken')
       sessionStorage.removeItem('userName')
       sessionStorage.removeItem('email')
       commit('logout')
     },
     async getMemberInfo({ commit }) {
       let familyEmails = await FirebaseService.getEmail()
-      // let token = sessionStorage.getItem('accessToken')
       let name = sessionStorage.getItem('userName')
       let email = sessionStorage.getItem('email')
       commit('checkSession')

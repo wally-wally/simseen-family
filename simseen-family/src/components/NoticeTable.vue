@@ -34,10 +34,14 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="pa-4" id="notice-card">
-          <p class="text-center" v-if="selectNotice.imgUrl !== ''">
-            <img :src="selectNotice.imgUrl" alt="notice-img" id="notice-img" style="margin-left: auto; margin-right: auto; display: block;" @click="zoomInImg(selectNotice.imgUrl)">
+          <p class="text-center img-section" v-if="selectNoticeFirstImgUrl.length">
+            <img :src="selectNoticeFirstImgUrl" alt="notice-img" id="notice-img" style="margin-left: auto; margin-right: auto; display: block;">
+            <v-btn class="mx-2" id="more-img-button" fab dark x-small color="#FFAB00" @click="zoomInImg(selectNoticeUrls)">
+              <span v-if="selectNoticeUrls.length === 1" class="img-more-count"><i class="fas fa-expand"></i></span>
+              <span v-else class="img-more-count">+{{ selectNoticeUrls.length - 1 }}</span>
+            </v-btn>
           </p>
-          <hr class="mb-2" v-if="selectNotice.imgUrl !== ''">
+          <hr class="mb-2" v-if="selectNoticeFirstImgUrl.length">
           <div class="notice-detail-body" v-html="selectNoticeBody"></div>
         </v-card-text>
         <v-divider></v-divider>
@@ -98,6 +102,8 @@ export default {
       selectNotice: '',
       selectNoticeBody: '',
       selectNoticeDate: '',
+      selectNoticeFirstImgUrl: '',
+      selectNoticeUrls: '',
       zoomInImgDialog: false,
       zoomInImgUrl: ''
     }
@@ -114,6 +120,8 @@ export default {
       let dayOfTheWeeks = this.$store.state.dayOfTheWeek
       this.selectNoticeDate = `${year}.${month < 9 ? [0, month].join('') : month}.${day < 9 ? [0, day].join('') : day}(${dayOfTheWeeks[dayOfTheWeek]})`
       this.dialog = true
+      this.selectNoticeFirstImgUrl = this.selectNotice.imgUrl[0]
+      this.selectNoticeUrls = this.selectNotice.imgUrl
     },
     editNoticeDialog(notice) {
       this.dialog = false
@@ -172,11 +180,26 @@ export default {
     font-family: 'Poor Story';
   }
 
+  .img-section {
+    position: relative;
+  }
+
+  .img-section #more-img-button {
+    position: absolute;
+    bottom: 0;
+    right: -1.1em;
+  }
+
+  .img-section #more-img-button .img-more-count {
+    font-size: 12px;
+    font-family: 'Noto Sans KR';
+  }
+
   @media (orientation: portrait) {
     p > img[id="notice-img"] {
       display: block;
       margin: 0 auto;
-      width: 90%;
+      width: 80%;
     }
   }
 
@@ -184,7 +207,7 @@ export default {
     p > img[id="notice-img"] {
       display: block;
       margin: 0 auto;
-      width: 70%;
+      width: 60%;
     }
   }
 </style>
