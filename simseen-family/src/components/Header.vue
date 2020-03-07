@@ -6,6 +6,11 @@
     <div v-if="user !== '' && user !== 'a'" class="login-name">{{ user }}<i class="fas fa-star" v-if="familyAuth"></i></div>
     <v-spacer></v-spacer>
     <nav class="nav">
+      <router-link v-if="familyAuth" to="/dinner">
+        <span id="dinner-icon" @click="toggleEvent(2)">
+          <img src="../assets/dinner_icon.png" alt="dinner_icon" width="25" id="dinner-img-icon">
+        </span>
+      </router-link>
       <router-link v-if="familyAuth" to="/notice"><i class="fas fa-clipboard-list notice-icon" @click="toggleEvent(1)"></i></router-link>
       <span v-if="!isLogin" class="google-login-icon" @click="loginWithGoogle"><i class="fab fa-google"></i></span>
       <span v-if="isLogin" class="google-logout-icon" @click="logoutDialog = true"><i class="fab fa-google"></i></span>
@@ -52,7 +57,7 @@ export default {
       if (this.isLogin) {
         this.$store.commit('checkSession')
         let vm = this
-        if (this.user === '' && vm.$store.state.clickNotice) {
+        if (vm.user === '' && (vm.$store.state.clickNotice || vm.$store.state.clickDinner)) {
           vm.$router.push('/')
         }
       }
@@ -62,9 +67,15 @@ export default {
       if (status === 0) {
         this.$store.state.clickTitle = true
         this.$store.state.clickNotice = false
+        this.$store.state.clickDinner = false
+      } else if (status === 1) {
+        this.$store.state.clickTitle = false
+        this.$store.state.clickNotice = true
+        this.$store.state.clickDinner = false
       } else {
         this.$store.state.clickTitle = false
         this.$store.state.clickNotice = true
+        this.$store.state.clickDinner = true
       }
     }
   },
@@ -112,10 +123,15 @@ export default {
     text-shadow: 3px 3px 6px lightgray;
   }
 
-  .notice-icon {
+  .notice-icon,
+  #dinner-icon {
     font-size: 25px;
     margin-right: 20px;
     text-shadow: 3px 3px 6px lightgray;
+  }
+
+  #dinner-img-icon {
+    vertical-align: text-bottom;
   }
 
   .google-login-icon {

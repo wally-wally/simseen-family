@@ -4,7 +4,7 @@
       <div class="dinner-title-body">
         <i class="fas fa-utensils"></i>
       </div>
-      <div class="dinner-weekly-icon" @click.stop="dialog = true">
+      <div class="dinner-weekly-icon" v-if="this.familyAuth" @click.stop="dialog = true">
         <i class="fas fa-clipboard"></i>
       </div>
     </div>
@@ -44,13 +44,21 @@
           color="#E6CC00"
         ></v-date-picker>
       </v-row>
-      <div class="dinner-select row mt-2">
-        <div class="col-12" v-if="noMenu === 1">
-          <div class="text-center">등록된 저녁 메뉴가 없습니다.</div>
+      <div v-if="this.familyAuth">
+        <div v-if="this.$route.name === 'main'" class="dinner-select row mt-2">
+          <div class="col-12" v-if="noMenu === 1">
+            <div class="text-center">등록된 저녁 메뉴가 없습니다.</div>
+          </div>
+          <div class="col-6 py-1" v-else v-for="menu in dinnerMenus" :key="menu">
+            <div class="text-center">{{ menu }}</div>
+          </div>
         </div>
-        <div class="col-6 py-1" v-else v-for="menu in dinnerMenus" :key="menu">
-          <div class="text-center">{{ menu }}</div>
+        <div v-else>
+          <DinnerEdit :dinnerMenus="dinnerMenus" :pickedDate="pickedDate" :noMenu="noMenu" @postDinner="postDinner"></DinnerEdit>
         </div>
+      </div>
+      <div v-else class="dinner-select-no-family row mt-2">
+        <div class="col-12 text-center">너 누구네 가족이야??(두둥)</div>
       </div>
     </div>
   </div>
@@ -59,9 +67,13 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import FirebaseService from '@/services/FirebaseService'
+import DinnerEdit from '@/components/DinnerEdit'
 
 export default {
   name: 'Dinner',
+  components: {
+    DinnerEdit
+  },
   data() {
     return {
       dinnerData: [],
@@ -105,6 +117,11 @@ export default {
       this.findDinner(this.dinnerData)
       this.findWeeklyDinner(this.dinnerData)
     },
+    async postDinner() {
+      this.dinnerData = await FirebaseService.getDinner()
+      this.findDinner(this.dinnerData)
+      this.findWeeklyDinner(this.dinnerData)
+    },
     findWeeklyDinner(dinnerData) {
       let todayDateValue = Date.parse(this.todayValue[1])
       let dayObj = {
@@ -125,7 +142,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['todayDate', 'dayOfTheWeek', 'dinnerCheckDayValue', 'lastDinnerCheckDayValue']),
+    ...mapState(['todayDate', 'dayOfTheWeek', 'dinnerCheckDayValue', 'lastDinnerCheckDayValue', 'familyAuth']),
     ...mapGetters(['todayValue'])
   }
 }
@@ -164,6 +181,13 @@ export default {
   .dinner-select {
     font-family: 'Gaegu';
     font-size: 18px;
+    color: #7a7a7a;
+    margin-top: 3px;
+  }
+
+  .dinner-select-no-family {
+    font-family: 'Noto Sans KR';
+    font-weight: bold;
     color: #7a7a7a;
     margin-top: 3px;
   }

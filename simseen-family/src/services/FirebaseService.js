@@ -105,6 +105,14 @@ export default {
 			created_at
 		})
 	},
+	postDinner(date, menus) {
+		let documentName = date.split('-').join('')
+		let dinnerDocument = firestore.collection(DINNER).doc(documentName)
+		return dinnerDocument.set({
+			date: new Date(date),
+			menus
+		})
+	},
 	deleteNotice(index) {
 		const noticeCollection = firestore.collection(NOTICE)
 		noticeCollection.doc(index.toString()).delete()

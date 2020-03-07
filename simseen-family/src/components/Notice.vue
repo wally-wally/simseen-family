@@ -160,21 +160,15 @@ export default {
     async postNotice(status) {
       let vm = this
       const initialNoticeForm = function() {
-        if (vm.imgFiles.length > 0 && vm.checkImgUrlCount !== vm.imgFiles.length) {
-          vm.imgFiles = []
-          vm.imgUrls = []
-          alert('전송 시간이 초과되었습니다. 인터넷 환경이 원활한 곳에서 다시 시도하세요.')
-        } else {
-          vm.title = null
-          vm.body = null
-          vm.imgFiles = []
-          vm.imgUrls = []
-          vm.valid = true
-          vm.waitingMessage = ''
-          vm.dialog = false
-          vm.postDialog = true
-          vm.getNotice()
-        }
+        vm.title = null
+        vm.body = null
+        vm.imgFiles = []
+        vm.imgUrls = []
+        vm.valid = true
+        vm.waitingMessage = ''
+        vm.dialog = false
+        vm.postDialog = true
+        vm.getNotice()
       }
       this.waitingMessage = '조금만 기다려주세요.'
       this.postAlert = status === 'post' ? '게시' : '수정'
@@ -197,31 +191,36 @@ export default {
           } else {
             this.checkImgUrlCount = this.imgUrls.length
           }
-          if (status === 'post') {
-            FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls)
-          } else {
-            FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls, this.editNoticeInfo.created_at)
-          }
-          this.waitingMessage = '조금만 기다려주세요.'
-          setTimeout(initialNoticeForm, 4000 * (this.imgFiles.length + 1.6))
-        }, 4000 * this.imgFiles.length)
-        // axios.post('https://api.imgur.com/3/image', formData, requestHeaders)
-        //   .then(response => {
-        //     console.log(status)
-        //     this.imgUrl = response.data.data.link
-        //     this.waitingMessage = '사진 업로드 중...'
-        //     if (response.status === 200) {
-        //       if (status === 'post') {
-        //         FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, this.imgUrl)
-        //       } else {
-        //         FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, this.imgUrl, this.editNoticeInfo.created_at)
-        //       }
-        //       setTimeout(initialNoticeForm, 2000)
-        //     }
-        //   })
+          setTimeout(() => {
+            if (this.imgFiles.length > 0 && this.checkImgUrlCount === this.imgFiles.length) {
+              if (status === 'post') {
+                FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls)
+              } else {
+                FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls, this.editNoticeInfo.created_at)
+              }
+              this.waitingMessage = '조금만 기다려주세요.'
+              setTimeout(initialNoticeForm, 2000 * (this.imgFiles.length + 1.5))
+            } else {
+              this.imgUrls = []
+              alert('전송 시간이 초과되었습니다. 인터넷 환경이 원활한 곳에서 다시 시도하세요.')
+            }
+          }, 4000 * (this.imgFiles.length + 1.5))
+          // if (this.imgFiles.length > 0 && this.checkImgUrlCount !== this.imgFiles.length) {
+          //   if (status === 'post') {
+          //     FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls)
+          //   } else {
+          //     FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls, this.editNoticeInfo.created_at)
+          //   }
+          //   this.waitingMessage = '조금만 기다려주세요.'
+          //   setTimeout(initialNoticeForm, 4000 * (this.imgFiles.length + 1.6))
+          // } else {
+          //   this.imgUrls = []
+          //   alert('전송 시간이 초과되었습니다. 인터넷 환경이 원활한 곳에서 다시 시도하세요.')
+          // }
+        }, 3000 * this.imgFiles.length)
       } else {
         let temp = 0
-        if (this.imgUrls.length >= 1 && this.imgUrls[0] !== '') {
+        if (this.imgUrls.length >= 1 && this.imgUrls[0] === '') {
           temp = 1
           this.checkImgUrlCount = this.imgUrls.length - 1
         } else {
@@ -305,22 +304,26 @@ export default {
       }
     },
     imgFiles() {
-      let preview = document.querySelector('#image-preview');
-      if (this.imgFiles) {
-        this.imgFiles.forEach(imgFile => {
-          let reader = new FileReader()
-          reader.onload = event => {
-            let imgWrapper = document.createElement('p')
-            imgWrapper.setAttribute('class', 'text-center ma-0')
-            imgWrapper.setAttribute('id', 'img-center-wrapper')
-            let imgTag = document.createElement('img')
-            imgTag.setAttribute('src', event.target.result)
-            imgTag.setAttribute('style', 'display: block; margin: 0 auto; padding: 8px 0; width: 85%;')
-            imgWrapper.appendChild(imgTag)
-            preview.appendChild(imgWrapper)
-          }
-          reader.readAsDataURL(imgFile)
-        })
+      if (this.imgFiles.length === 0) {
+        this.imageReset()
+      } else {
+        let preview = document.querySelector('#image-preview');
+        if (this.imgFiles) {
+          this.imgFiles.forEach(imgFile => {
+            let reader = new FileReader()
+            reader.onload = event => {
+              let imgWrapper = document.createElement('p')
+              imgWrapper.setAttribute('class', 'text-center ma-0')
+              imgWrapper.setAttribute('id', 'img-center-wrapper')
+              let imgTag = document.createElement('img')
+              imgTag.setAttribute('src', event.target.result)
+              imgTag.setAttribute('style', 'display: block; margin: 0 auto; padding: 8px 0; width: 85%;')
+              imgWrapper.appendChild(imgTag)
+              preview.appendChild(imgWrapper)
+            }
+            reader.readAsDataURL(imgFile)
+          })
+        }
       }
     }
   }
