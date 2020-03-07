@@ -127,6 +127,7 @@ export default {
       showImageInput: true,
       imgFiles: [],
       imgUrls: [],
+      imgUploadTime: 0,
       imgRules: [
         v => (v.length <= 3) || '최대 3장까지 첨부할 수 있습니다.'
       ],
@@ -168,6 +169,7 @@ export default {
         vm.waitingMessage = ''
         vm.dialog = false
         vm.postDialog = true
+        vm.imgUploadTime = 0
         vm.getNotice()
       }
       this.waitingMessage = '조금만 기다려주세요.'
@@ -181,6 +183,7 @@ export default {
             .then(response => {
               vm.imgUrls.push(response.data.data.link)
               vm.waitingMessage = `사진 업로드 중`
+              if (response.status === 200) return
           })
         })
         setTimeout(() => {
@@ -191,6 +194,7 @@ export default {
           } else {
             this.checkImgUrlCount = this.imgUrls.length
           }
+          this.waitingMessage = '조금만 기다려주세요.'
           setTimeout(() => {
             if (this.imgFiles.length > 0 && this.checkImgUrlCount === this.imgFiles.length) {
               if (status === 'post') {
@@ -199,13 +203,13 @@ export default {
                 FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls, this.editNoticeInfo.created_at)
               }
               this.waitingMessage = '조금만 기다려주세요.'
-              setTimeout(initialNoticeForm, 2000 * (this.imgFiles.length + 1.4))
+              setTimeout(initialNoticeForm, 2000)
             } else {
               this.imgUrls = []
               alert('전송 시간이 초과되었습니다. 인터넷 환경이 원활한 곳에서 다시 시도하세요.')
             }
-          }, 4000 * (this.imgFiles.length + 1.6))
-        }, 3000 * this.imgFiles.length)
+          }, 3000 * (this.imgUploadTime + 1))
+        }, 3000 * this.imgUploadTime)
       } else {
         let temp = 0
         if (this.imgUrls.length >= 2 && this.imgUrls[0] === '') {
@@ -255,8 +259,10 @@ export default {
     clearImages() {
       this.showImageInput = true
       this.imgUrls = ['']
+      this.imgUploadTime = 0
     },
     imageReset() {
+      this.imgUploadTime = 0
       let imagePreview = document.querySelector('#image-preview')
       let tempImages = document.querySelectorAll('#img-center-wrapper')
       tempImages.forEach(tempImage => imagePreview.removeChild(tempImage))
@@ -302,6 +308,11 @@ export default {
         let preview = document.querySelector('#image-preview');
         if (this.imgFiles) {
           this.imgFiles.forEach(imgFile => {
+            if (imgFile.size < 1000000) {
+              this.imgUploadTime += 1
+            } else {
+              this.imgUploadTime += (parseInt(imgFile.size / 1000000)) + 1
+            }
             let reader = new FileReader()
             reader.onload = event => {
               let imgWrapper = document.createElement('p')
