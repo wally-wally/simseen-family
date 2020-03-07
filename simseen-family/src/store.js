@@ -21,6 +21,7 @@ export default new Vuex.Store({
     lastNoticeIndex: 0,
     clickTitle: true,
     clickNotice: false,
+    clickDinner: false,
     clickInit: true,
     todayDate: new Date(),
     todayElements: new Date().toLocaleDateString().split('.').splice(0, 3),
