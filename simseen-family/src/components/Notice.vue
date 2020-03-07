@@ -117,7 +117,7 @@ export default {
       title: null,
       titleRules: [
         v => !!v || '제목을 작성하세요.',
-        v => (v && v.length <= 10) || '최대 10자까지 작성 가능합니다.'
+        v => (v && v.length <= 15) || '최대 15자까지 작성 가능합니다.'
       ],
       body: null,
       bodyRules: [
@@ -199,32 +199,24 @@ export default {
                 FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls, this.editNoticeInfo.created_at)
               }
               this.waitingMessage = '조금만 기다려주세요.'
-              setTimeout(initialNoticeForm, 2000 * (this.imgFiles.length + 1.5))
+              setTimeout(initialNoticeForm, 2000 * (this.imgFiles.length + 1.4))
             } else {
               this.imgUrls = []
               alert('전송 시간이 초과되었습니다. 인터넷 환경이 원활한 곳에서 다시 시도하세요.')
             }
-          }, 4000 * (this.imgFiles.length + 1.5))
-          // if (this.imgFiles.length > 0 && this.checkImgUrlCount !== this.imgFiles.length) {
-          //   if (status === 'post') {
-          //     FirebaseService.postNotice(this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls)
-          //   } else {
-          //     FirebaseService.updateNotice(this.editNoticeInfo.noticeIdx, this.title, this.$store.state.user, this.$store.state.email, this.body, temp ? this.imgUrls.slice(1, this.checkImgUrlCount + 1) : this.imgUrls, this.editNoticeInfo.created_at)
-          //   }
-          //   this.waitingMessage = '조금만 기다려주세요.'
-          //   setTimeout(initialNoticeForm, 4000 * (this.imgFiles.length + 1.6))
-          // } else {
-          //   this.imgUrls = []
-          //   alert('전송 시간이 초과되었습니다. 인터넷 환경이 원활한 곳에서 다시 시도하세요.')
-          // }
+          }, 4000 * (this.imgFiles.length + 1.6))
         }, 3000 * this.imgFiles.length)
       } else {
         let temp = 0
-        if (this.imgUrls.length >= 1 && this.imgUrls[0] === '') {
+        if (this.imgUrls.length >= 2 && this.imgUrls[0] === '') {
           temp = 1
           this.checkImgUrlCount = this.imgUrls.length - 1
         } else {
-          this.checkImgUrlCount = this.imgUrls.length
+          if (this.imgUrls === ['']) {
+            this.checkImgUrlCount = 0
+          } else {
+            this.checkImgUrlCount = this.imgUrls.length
+          }
         }
         if (this.imgUrls.length === 0) {
           this.imgUrls = ['']

@@ -1,5 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+// import 'firebase/storage'
 import 'firebase/auth'
 import store from '../store'
 
@@ -28,6 +29,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 
 const firestore = firebase.firestore()
+// const firestorage = firebase.storage().ref()
 
 export default {
 	getEmail() {
