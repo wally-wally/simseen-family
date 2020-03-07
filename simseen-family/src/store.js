@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import VueSession from 'vue-session'
 import jwtDecode from 'jwt-decode'
 import FirebaseService from '@/services/FirebaseService'
+import { encryptToken, decryptToken } from './encryptDecryptToken.js'
 // import axios from 'axios'
 
 Vue.use(VueSession)
@@ -95,13 +96,6 @@ export default new Vuex.Store({
   },
   actions: {
     async loginWithGoogle({dispatch}) {
-      const encryptToken = function(originalToken) {
-        let tokenLength = originalToken.length
-        let frontToken = originalToken.slice(0, parseInt(tokenLength / 2))
-        let backToken = originalToken.slice(parseInt(tokenLength / 2))
-        let switchToken = backToken + frontToken
-        return switchToken.split('').reverse().join('')
-      }
       const result = await FirebaseService.loginWithGoogle()
       sessionStorage.setItem('token', encryptToken(result.credential.idToken))
       sessionStorage.setItem('userName', result.user.displayName)
@@ -115,21 +109,6 @@ export default new Vuex.Store({
       commit('logout')
     },
     async getMemberInfo({ commit }) {
-      const decryptToken = function(token) {
-        let tokenLength = token.length
-        let switchToken = token.split('').reverse().join('')
-        if (tokenLength % 2 === 0) {
-          let frontToken = switchToken.slice(0, parseInt(tokenLength / 2))
-          let backToken = switchToken.slice(parseInt(tokenLength / 2))
-          let changeToken =  backToken + frontToken
-          return changeToken.split('').join('')
-        } else {
-          let frontToken = switchToken.slice(0, parseInt(tokenLength / 2) + 1)
-          let backToken = switchToken.slice(parseInt(tokenLength / 2) + 1)
-          let changeToken = backToken + frontToken
-          return changeToken.split('').join('')
-        }
-      }
       let familyEmails = await FirebaseService.getEmail()
       let name = sessionStorage.getItem('userName')
       let encryptToken = sessionStorage.getItem('token')

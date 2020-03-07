@@ -57,8 +57,17 @@
           <DinnerEdit :dinnerMenus="dinnerMenus" :pickedDate="pickedDate" :noMenu="noMenu" @postDinner="postDinner"></DinnerEdit>
         </div>
       </div>
-      <div v-else class="dinner-select-no-family row mt-2">
-        <div class="col-12 text-center">너 누구네 가족이야??(두둥)</div>
+      <div v-else-if="this.isLogin && !this.familyAuth" class="mt-2">
+        <p class="text-center">
+          <img src="../assets/dinner_icon.png" alt="dinner_icon" width="100">
+        </p>
+        <p class="text-center login-please">음...? 우리 가족이 아닌데? 빠이^^</p>
+      </div>
+      <div v-else class="mt-2">
+        <p class="text-center">
+          <img src="../assets/dinner_icon.png" alt="dinner_icon" width="100">
+        </p>
+        <p class="text-center login-please">보고 싶으면 먼저 로그인을 하세요.</p>
       </div>
     </div>
   </div>
@@ -142,7 +151,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['todayDate', 'dayOfTheWeek', 'dinnerCheckDayValue', 'lastDinnerCheckDayValue', 'familyAuth']),
+    ...mapState(['isLogin','todayDate', 'dayOfTheWeek', 'dinnerCheckDayValue', 'lastDinnerCheckDayValue', 'familyAuth']),
     ...mapGetters(['todayValue'])
   }
 }
@@ -178,16 +187,10 @@ export default {
     font-family: 'Stylish';
   }
 
-  .dinner-select {
+  .dinner-select,
+  .login-please {
     font-family: 'Gaegu';
     font-size: 18px;
-    color: #7a7a7a;
-    margin-top: 3px;
-  }
-
-  .dinner-select-no-family {
-    font-family: 'Noto Sans KR';
-    font-weight: bold;
     color: #7a7a7a;
     margin-top: 3px;
   }
