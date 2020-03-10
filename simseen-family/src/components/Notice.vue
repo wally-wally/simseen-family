@@ -140,7 +140,7 @@ export default {
       checkImgUrlCount: 0
     }
   },
-  mounted() {
+  created() {
     this.getNotice()
   },
   methods: {
