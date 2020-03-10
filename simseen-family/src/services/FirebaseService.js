@@ -8,6 +8,8 @@ const EMAILS = 'emails'
 const DINNER = 'dinner'
 const BIBLE = 'bible'
 const NOTICE = 'notice'
+const MEMO = 'memo'
+// const TODOS = 'TODOS'
 
 const API_KEY = process.env.VUE_APP_FIREBASE_API_KEY
 const DATABASE_URL = process.env.VUE_APP_FIREBASE_DATABASE_URL
@@ -59,12 +61,11 @@ export default {
 	getBible() {
 		const bibleCollection = firestore.collection(BIBLE)
 		return bibleCollection
-				.orderBy('date', 'desc')
+				.orderBy('bibleIdx', 'desc')
 				.get()
 				.then((docSnapshots) => {				
 					return docSnapshots.docs.map((doc) => {
 						let data = doc.data()
-						data.date = new Date(data.date.toDate())
 						return data
 					})
 				})
@@ -82,6 +83,14 @@ export default {
 					})
 				})
 	},
+	getMemo(userEmail) {
+		const memoCollection = firestore.collection(MEMO)
+		return memoCollection
+				.get()
+				.then(docSnapshots => {
+					return docSnapshots.docs.find(doc => doc.id === userEmail).data().memo
+				})
+	},
 	postNotice(title, user, userEmail, body, imgUrl) {
 		let noticeIdx = store.state.lastNoticeIndex + 1
 		let noticeDocument = firestore.collection(NOTICE).doc(noticeIdx.toString())
@@ -93,6 +102,17 @@ export default {
 			imgUrl,
 			noticeIdx,
 			created_at: firebase.firestore.FieldValue.serverTimestamp()
+		})
+	},
+	changeBible(bible, status) {
+		let documentIdx = bible.bibleIdx <= 9 ? '0' + bible.bibleIdx.toString() : bible.bibleIdx.toString()
+		let bibleDocument = firestore.collection(BIBLE).doc(documentIdx)
+		let select = status ? true : false
+		return bibleDocument.set({
+			body: bible.body,
+			bibleIdx: bible.bibleIdx,
+			position: bible.position,
+			select
 		})
 	},
 	updateNotice(noticeIdx, title, user, userEmail, body, imgUrl, created_at) {

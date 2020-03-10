@@ -3,7 +3,7 @@
     <router-link to="/" style="text-decoration: none;">
       <span class="homepage-name" @click="toggleEvent(0)">Simpson Family</span>
     </router-link>
-    <div v-if="user !== '' && user !== 'a'" class="login-name">{{ user }}<i class="fas fa-star" v-if="familyAuth"></i></div>
+    <div v-if="user !== '' && user !== 'a'" class="login-name" @click="goMemoTodo">{{ user }}<i class="fas fa-star" v-if="familyAuth"></i></div>
     <v-spacer></v-spacer>
     <nav class="nav">
       <router-link v-if="familyAuth" to="/dinner">
@@ -57,13 +57,14 @@ export default {
       if (this.isLogin) {
         this.$store.commit('checkSession')
         let vm = this
-        if (vm.user === '' && (vm.$store.state.clickNotice || vm.$store.state.clickDinner)) {
+        if (vm.user === '' && (vm.$store.state.clickNotice || vm.$store.state.clickDinner || vm.$store.state.clickBible)) {
           vm.$router.push('/')
         }
       }
     },
     toggleEvent(status) {
       this.$store.state.clickInit = false
+      this.$store.state.clickBible = false
       if (status === 0) {
         this.$store.state.clickTitle = true
         this.$store.state.clickNotice = false
@@ -74,9 +75,12 @@ export default {
         this.$store.state.clickDinner = false
       } else {
         this.$store.state.clickTitle = false
-        this.$store.state.clickNotice = true
+        this.$store.state.clickNotice = false
         this.$store.state.clickDinner = true
       }
+    },
+    goMemoTodo() {
+      this.$router.push('/memo')
     }
   },
   watch: {

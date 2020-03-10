@@ -93,7 +93,7 @@ export default {
       dialog: false
     }
   },
-  mounted() {
+  created() {
     this.getDinner()
   },
   methods: {
