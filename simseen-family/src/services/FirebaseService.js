@@ -6,10 +6,11 @@ import store from '../store'
 
 const EMAILS = 'emails'
 const DINNER = 'dinner'
+const DINNERWISH = 'dinnerwish'
 const BIBLE = 'bible'
 const NOTICE = 'notice'
 const MEMO = 'memo'
-// const TODOS = 'TODOS'
+const TODOS = 'todos'
 
 const API_KEY = process.env.VUE_APP_FIREBASE_API_KEY
 const DATABASE_URL = process.env.VUE_APP_FIREBASE_DATABASE_URL
@@ -83,6 +84,25 @@ export default {
 					})
 				})
 	},
+	getDinnerWish() {
+		const dinnerWishCollection = firestore.collection(DINNERWISH)
+		return dinnerWishCollection
+				.get()
+				.then((docSnapshots) => {				
+					return docSnapshots.docs.map((doc) => {
+						let data = doc.data()
+						return data.dinnerwish
+					})
+				})
+	},
+	getTodos(userEmail) {
+		const todosCollection = firestore.collection(TODOS)
+		return todosCollection
+				.get()
+				.then(docSnapshots => {				
+					return docSnapshots.docs.find(doc => doc.id === userEmail).data().todos
+				})
+	},
 	getMemo(userEmail) {
 		const memoCollection = firestore.collection(MEMO)
 		return memoCollection
@@ -90,6 +110,24 @@ export default {
 				.then(docSnapshots => {
 					return docSnapshots.docs.find(doc => doc.id === userEmail).data().memo
 				})
+	},
+	postDinnerWish(dinnerwish) {
+		const dinnerWishDocument = firestore.collection(DINNERWISH).doc('dinnerwish')
+		return dinnerWishDocument.set({
+			dinnerwish
+		})
+	},
+	postMemo(user, memo) {
+		const memoDocument = firestore.collection(MEMO).doc(user)
+		return memoDocument.set({
+			memo
+		})
+	},
+	postTodos(user, todos) {
+		const todosCollection = firestore.collection(TODOS).doc(user)
+		return todosCollection.set({
+			todos
+		})
 	},
 	postNotice(title, user, userEmail, body, imgUrl) {
 		let noticeIdx = store.state.lastNoticeIndex + 1

@@ -1,19 +1,23 @@
 <template>
   <div class="mx-2 my-5">
     <div class="dinner-edit-wrapper">
-      <v-text-field v-model="menus[0]" label="밥" :counter="8" :rules="dinnerRules"></v-text-field>
-      <v-text-field v-model="menus[1]" label="국" :counter="8" :rules="dinnerRules"></v-text-field>
-      <v-text-field v-model="menus[2]" label="메인메뉴" :counter="8" :rules="dinnerRules"></v-text-field>
-      <v-text-field v-model="menus[3]" label="반찬" :counter="8" :rules="dinnerRules"></v-text-field>
-      <v-text-field v-model="menus[4]" label="반찬 또는 김치" :counter="8" :rules="dinnerRules"></v-text-field>
-      <v-text-field v-model="menus[5]" label="반찬 또는 김치" :counter="8" :rules="dinnerRules"></v-text-field>
+      <v-form v-model="valid">
+        <v-text-field v-model="menus[0]" label="메뉴1" :counter="8" :rules="dinnerRules" color="#E6CC00"></v-text-field>
+        <v-text-field v-model="menus[1]" label="메뉴2" :counter="8" :rules="dinnerRules" color="#E6CC00"></v-text-field>
+        <v-text-field v-model="menus[2]" label="메뉴3" :counter="8" :rules="dinnerRules" color="#E6CC00"></v-text-field>
+        <v-text-field v-model="menus[3]" label="메뉴4" :counter="8" :rules="dinnerRules" color="#E6CC00"></v-text-field>
+        <v-text-field v-model="menus[4]" label="메뉴5" :counter="8" :rules="dinnerRules" color="#E6CC00"></v-text-field>
+        <v-text-field v-model="menus[5]" label="메뉴6" :counter="8" :rules="dinnerRules" color="#E6CC00"></v-text-field>
+      </v-form>
     </div>
     <v-card-actions class="pt-4 pb-0 px-0">
-      <span class="alert-section" :style="{ color: noWriteMenu ? 'red' : 'black' }">{{ dinnerMessage }}</span>
+      <span class="alert-section" :style="{ color: noWriteMenu || !valid ? 'red' : 'black' }">{{ dinnerMessage }}</span>
       <v-spacer></v-spacer>
-      <v-btn v-if="this.noMenu" rounded color="error" dark id="dinner-buttons" @click="postDinner(0)" :disabled="noWriteMenu ? true : false">식단 등록</v-btn>
-      <v-btn v-else rounded color="#F79F0F" dark id="dinner-buttons" @click="postDinner(1)" :disabled="noWriteMenu ? true : false">메뉴 수정</v-btn>
+      <v-btn v-if="this.noMenu" rounded color="error" dark id="dinner-buttons" @click="postDinner(0)" :disabled="noWriteMenu || !valid ? true : false">식단 등록</v-btn>
+      <v-btn v-else rounded color="#F79F0F" dark id="dinner-buttons" @click="postDinner(1)" :disabled="noWriteMenu || !valid ? true : false">메뉴 수정</v-btn>
     </v-card-actions>
+    <hr class="mt-8" color="lightgray">
+    <DinnerWish></DinnerWish>
     <v-dialog v-model="dinnerDialog" persistent>
       <v-card>
         <v-card-text class="px-4 pt-4 pb-2" id="notice-card">
@@ -49,11 +53,15 @@
 </template>
 
 <script>
+import DinnerWish from '@/components/DinnerWish'
 import FirebaseService from '@/services/FirebaseService'
 
 export default {
   name: 'DinnerEdit',
   props: ['dinnerMenus', 'pickedDate', 'noMenu'],
+  components: {
+    DinnerWish
+  },
   data() {
     return {
       menus: this.noMenu === 1 ? ['', '', '', '', '', ''] : this.dinnerMenus,
@@ -64,12 +72,15 @@ export default {
       dinnerDialog: false,
       dinnerAlert: '',
       dinnerMessage: '',
-      noWriteMenu: 0
+      noWriteMenu: 0,
+      valid: true
     }
   },
   methods: {
     async postDinner(status) {
-      if (this.$store.state.user === '김영숙' && this.$store.state.email.split('@')[0] === 'k24116297' && this.$store.state.familyAuth) {
+      const postCondition = (this.$store.state.user === '김영숙' && this.$store.state.email.split('@')[0] === 'k24116297') ||
+                            (this.$store.state.user === '심규현' && this.$store.state.email.split('@')[0] === 'wallys0213')
+      if (this.$store.state.familyAuth && postCondition) {
         this.dinnerAlert = status ? '수정' : '등록'
         await FirebaseService.postDinner(this.pickedDate, this.menus)
         this.$emit('postDinner')
@@ -102,6 +113,11 @@ export default {
     menus() {
       this.noWriteMenu = !this.menus.join('').length ? 1 : 0
       this.dinnerMessage = this.noWriteMenu ? '[주의!] 최소 한 개 이상 메뉴를 등록하세요.' : '작성 완료 후 오른쪽 버튼을 누르세요.'
+    },
+    valid() {
+      if (!this.valid) {
+        this.dinnerMessage = '[주의!]메뉴당 최대 8자 작성할 수 있습니다.'
+      }
     }
   }
 }
@@ -117,7 +133,7 @@ export default {
   }
 
   .alert-section {
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
   }
 
   #dinner-buttons {

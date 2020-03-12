@@ -65,6 +65,7 @@ export default {
       this.$store.state.clickTitle = false
       this.$store.state.clickNotice = false
       this.$store.state.clickDinner = false
+      this.$store.state.clickMemo = false
       this.$router.push('/bible')
     }
   }

@@ -7,6 +7,7 @@
       :page.sync="page"
       item-key="noticeIdx"
       hide-default-footer
+      color="#E6CC00"
       @page-count="pageCount = $event"
       @click:row="showNoticeDetail($event)"
       class="elevation-1">
