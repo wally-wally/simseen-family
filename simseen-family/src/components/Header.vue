@@ -3,7 +3,10 @@
     <router-link to="/" style="text-decoration: none;">
       <span class="homepage-name" @click="toggleEvent(0)">Simpson Family</span>
     </router-link>
-    <div v-if="user !== '' && user !== 'a'" class="login-name" @click="goMemoTodo">{{ user }}<i class="fas fa-star" v-if="familyAuth"></i></div>
+    <router-link v-if="familyAuth" to="/memo" style="text-decoration: none; color: black;">
+      <div class="login-name" @click="toggleEvent(3)">{{ user }}<i class="fas fa-star" v-if="familyAuth"></i></div>
+    </router-link>
+    <div v-else class="login-name">{{ user }}</div>
     <v-spacer></v-spacer>
     <nav class="nav">
       <router-link v-if="familyAuth" to="/dinner">
@@ -57,7 +60,7 @@ export default {
       if (this.isLogin) {
         this.$store.commit('checkSession')
         let vm = this
-        if (vm.user === '' && (vm.$store.state.clickNotice || vm.$store.state.clickDinner || vm.$store.state.clickBible)) {
+        if (vm.user === '' && (vm.$store.state.clickNotice || vm.$store.state.clickDinner || vm.$store.state.clickBible || vm.$store.state.clickMemo)) {
           vm.$router.push('/')
         }
       }
@@ -69,18 +72,23 @@ export default {
         this.$store.state.clickTitle = true
         this.$store.state.clickNotice = false
         this.$store.state.clickDinner = false
+        this.$store.state.clickMemo = false
       } else if (status === 1) {
         this.$store.state.clickTitle = false
         this.$store.state.clickNotice = true
         this.$store.state.clickDinner = false
+        this.$store.state.clickMemo = false
+      } else if (status === 2){
+        this.$store.state.clickTitle = false
+        this.$store.state.clickNotice = false
+        this.$store.state.clickDinner = true
+        this.$store.state.clickMemo = false
       } else {
         this.$store.state.clickTitle = false
         this.$store.state.clickNotice = false
         this.$store.state.clickDinner = true
+        this.$store.state.clickMemo = true
       }
-    },
-    goMemoTodo() {
-      this.$router.push('/memo')
     }
   },
   watch: {

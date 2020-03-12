@@ -21,6 +21,7 @@
             <v-text-field
               v-model="title"
               label="제목"
+              color="#E6CC00"
               :counter="10"
               :rules="titleRules"
               required></v-text-field>
@@ -35,6 +36,7 @@
             <v-textarea
               v-model="body"
               label="내용"
+              color="#E6CC00"
               :counter="0"
               :rules="bodyRules"
               required></v-textarea>
@@ -45,6 +47,7 @@
               v-model="imgFiles"
               label="사진 첨부(선택)"
               id="photo"
+              color="#E6CC00"
               :rules="imgRules"
               :counter="3"
               multiple

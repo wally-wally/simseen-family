@@ -25,13 +25,15 @@ export default new Vuex.Store({
     clickNotice: false,
     clickDinner: false,
     clickBible: false,
+    clickMemo: false,
     clickInit: true,
     todayDate: new Date(),
     todayElements: new Date().toLocaleDateString().split('.').splice(0, 3),
     bibleCheckDayValue: null,
     dinnerCheckDayValue: null,
     lastDinnerCheckDayValue: null,
-    dayOfTheWeek: ['일', '월', '화', '수', '목', '금', '토']
+    dayOfTheWeek: ['일', '월', '화', '수', '목', '금', '토'],
+    tempMemo: ''
   },
   mutations: {
     loginSuccess(state, loginInfo) {
