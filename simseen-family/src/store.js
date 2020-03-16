@@ -33,7 +33,8 @@ export default new Vuex.Store({
     dinnerCheckDayValue: null,
     lastDinnerCheckDayValue: null,
     dayOfTheWeek: ['일', '월', '화', '수', '목', '금', '토'],
-    tempMemo: ''
+    tempMemo: '',
+    loginLoading: false
   },
   mutations: {
     loginSuccess(state, loginInfo) {
@@ -41,6 +42,7 @@ export default new Vuex.Store({
       state.isLoginError = false
       state.user = loginInfo[0]
       state.email = jwtDecode(loginInfo[1]).email
+      state.loginLoading = false
     },
     loginError(state) {
       state.isLogin = false
@@ -94,12 +96,18 @@ export default new Vuex.Store({
       state.familyEmails = payload
       state.familyAuth = Object.entries(state.familyEmails[0].emails)
         .some(user => state.user && user[1] === state.email ? true : false)
-      setTimeout(state.checkUser = true, 2000)
+      setTimeout(() => {
+        state.checkUser = true
+      }, 2000)
+    },
+    loadingStart(state) {
+      state.loginLoading = true
     }
   },
   actions: {
-    async loginWithGoogle({dispatch}) {
+    async loginWithGoogle({dispatch, commit}) {
       const result = await FirebaseService.loginWithGoogle()
+      commit('loadingStart')
       sessionStorage.setItem('token', encryptToken(result.credential.idToken))
       sessionStorage.setItem('userName', result.user.displayName)
       sessionStorage.setItem('oldTime', new Date())
@@ -111,12 +119,15 @@ export default new Vuex.Store({
       sessionStorage.removeItem('token')
       commit('logout')
     },
-    async getMemberInfo({ commit }) {
+    async getMemberInfo({ commit, state }) {
       let familyEmails = await FirebaseService.getEmail()
       let name = sessionStorage.getItem('userName')
       let encryptToken = sessionStorage.getItem('token')
       commit('checkSession')
-      if(name === null && encryptToken === null) return
+      if(name === null && encryptToken === null) {
+        state.loginLoading = false
+        return
+      }
       let token = decryptToken(encryptToken)
       commit('loginSuccess', [name, token])
       commit('checkfamilyAuth', familyEmails)

@@ -1,14 +1,20 @@
 <template>
   <v-app>
-    <Header></Header>
-    <v-content>
-      <router-view></router-view>
-    </v-content>
-    <Footer></Footer>
+    <div :class="this.loginLoading ? 'background-black' : ''"></div>
+    <div :class="this.loginLoading ? 'loader' : ''"></div>
+    <span :class="this.loginLoading ? 'loading-alert' : ''"></span>
+    <div :class="this.loginLoading ? 'all-wrapper' : ''">
+      <Header></Header>
+      <v-content>
+        <router-view></router-view>
+      </v-content>
+      <Footer></Footer>
+    </div>
   </v-app>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Header from './components/Header'
 import Footer from './components/Footer'
 
@@ -17,6 +23,9 @@ export default {
   components: {
     Header,
     Footer
+  },
+  computed: {
+    ...mapState(['loginLoading'])
   },
   mounted() {
     window.onbeforeunload = () => {
@@ -28,6 +37,6 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+  @import url('./assets/css/loader.css');
 </style>

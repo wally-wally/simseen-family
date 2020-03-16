@@ -6,6 +6,7 @@ import store from '../store'
 
 const EMAILS = 'emails'
 const DINNER = 'dinner'
+const DINNERCART = 'dinnercart'
 const DINNERWISH = 'dinnerwish'
 const BIBLE = 'bible'
 const NOTICE = 'notice'
@@ -84,6 +85,17 @@ export default {
 					})
 				})
 	},
+	getDinnerCart() {
+		const dinnerCartCollection = firestore.collection(DINNERCART)
+		return dinnerCartCollection
+				.get()
+				.then((docSnapshots) => {				
+					return docSnapshots.docs.map((doc) => {
+						let data = doc.data()
+						return data.cart
+					})
+				})
+	},
 	getDinnerWish() {
 		const dinnerWishCollection = firestore.collection(DINNERWISH)
 		return dinnerWishCollection
@@ -110,6 +122,12 @@ export default {
 				.then(docSnapshots => {
 					return docSnapshots.docs.find(doc => doc.id === userEmail).data().memo
 				})
+	},
+	postDinnerCart(dinnercart) {
+		const dinnerCartDocument = firestore.collection(DINNERCART).doc('dinnercart')
+		return dinnerCartDocument.set({
+			cart: dinnercart
+		})
 	},
 	postDinnerWish(dinnerwish) {
 		const dinnerWishDocument = firestore.collection(DINNERWISH).doc('dinnerwish')

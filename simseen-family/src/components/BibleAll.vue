@@ -30,10 +30,11 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions class="px-4 py-3 bible-detail-buttons">
-          <v-checkbox v-if="!selectStatus" v-model="checkbox" class="py-0"></v-checkbox><span v-if="!selectStatus" class="bible-checkbox">금주의 성경암송으로</span>
+          <v-checkbox v-if="!selectStatus" v-model="checkbox" color="#F79F0F" class="py-0"></v-checkbox><span v-if="!selectStatus" class="bible-checkbox">금주의 성경암송으로</span>
           <v-btn v-if="!selectStatus" small color="#F79F0F" @click="changeBible(selectBible)" :disabled="!checkbox">변경</v-btn>
           <v-spacer></v-spacer>
-          <v-btn small color="#E6CC00" @click="closeDialog">닫기</v-btn>
+          <div v-if="loadingStatus" class="waiting-message">조금만 기다려주세요.</div>
+          <v-btn v-else small color="#E6CC00" @click="closeDialog">닫기</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -76,7 +77,8 @@ export default {
       dialog: false,
       changeDialog: false,
       selectStatus: false,
-      checkbox: false
+      checkbox: false,
+      loadingStatus: 0
     }
   },
   created() {
@@ -95,12 +97,14 @@ export default {
       this.selectStatus = bible.select
     },
     async changeBible(bible) {
+      this.loadingStatus = 1
       await FirebaseService.changeBible(this.nowSelect, 0)
       await FirebaseService.changeBible(bible, 1)
       setTimeout(() => {
         this.getBible()
         this.closeDialog()
         this.changeDialog = true
+        this.loadingStatus = 0
       }, 4000)
     },
     closeDialog() {
@@ -172,6 +176,12 @@ export default {
   .bible-checkbox {
     font-size: 14px;
     margin-right: 8px;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+  }
+
+  .waiting-message {
+    font-family: 'Poor Story';
+    font-size: 14px;
+    letter-spacing: -0.06em;
   }
 </style>
