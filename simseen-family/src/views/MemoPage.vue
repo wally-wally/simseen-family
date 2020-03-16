@@ -1,7 +1,7 @@
 <template>
   <div class="memo-wrapper">
     <TodoList v-if="this.familyAuth" data-aos="fade-down" data-aos-duration="2000" data-aos-once="true"></TodoList>
-    <hr v-if="this.familyAuth" class="mx-4" color="lightgray" data-aos="fade-down" data-aos-duration="2000" data-aos-once="true">
+    <hr v-if="this.familyAuth" class="mx-4 mb-5" color="lightgray" data-aos="fade-down" data-aos-duration="2000" data-aos-once="true">
     <Memo v-if="this.familyAuth" data-aos="fade-down" data-aos-delay="1000" data-aos-duration="2000" data-aos-once="true"></Memo>
     <div v-else>
       <p class="text-center" style="font-size: 120px;"><i class="fas fa-home"></i></p>

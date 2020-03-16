@@ -26,6 +26,7 @@
       </div>
       <div class="todo-list-item">
         <v-list-item-group
+          ref="form"
           v-if="todoItems.length"
           v-model="completedItems"
           multiple
@@ -57,8 +58,8 @@
           </template>
         </v-list-item-group>
         <div v-else class="full-todos">
-          <p v-if="loadingStatus">데이터를 불러오는 중입니다.</p>
-          <p v-else>할 일을 등록해주세요.</p>
+          <p v-if="loadingStatus" class="mb-6">데이터를 불러오는 중입니다.</p>
+          <p v-else class="mb-6">할 일을 등록해주세요.</p>
         </div>
       </div>
       <v-dialog v-model="todoDialog" persistent>
@@ -97,7 +98,8 @@ export default {
       selectTodoIndex: 0,
       init: 1,
       loadingStatus: 1,
-      deleteIconWidth: 1
+      deleteIconWidth: 1,
+      // deleteStatus: 0
     }
   },
   created() {
@@ -144,33 +146,72 @@ export default {
         this.todo = ''
         this.init = 0
       } else { // 삭제
-        items.splice(this.selectTodoIndex, 1)
-        FirebaseService.postTodos(this.userEmail, items)
+        // items.splice(this.selectTodoIndex, 1)
+        // this.deleteStatus = 1
+        let sendItems = []
+        let resetCompletedItems = []
+        let deleteCheck = 0
+        this.completedItems = []
+        items.forEach((item, idx) => {
+          if (idx !== this.selectTodoIndex) {
+            sendItems.push({
+              item: item.item,
+              completed: item.completed
+            })
+            if (deleteCheck && item.completed) {
+              resetCompletedItems.push(idx - 1)
+            } else if (!deleteCheck && item.completed) {
+              resetCompletedItems.push(idx)
+            }
+          }
+          else {
+            deleteCheck = 1
+          }
+        })
+        FirebaseService.postTodos(this.userEmail, sendItems)
         this.todoDialog = false
         this.init = 0
+        this.todoItems = sendItems
+        // this.deleteStatus = 1
+        setTimeout(() => {
+          this.$refs.form.items.forEach((item, idx) => {
+            if (resetCompletedItems.includes(idx)) {
+              item.isActive = true
+              item.groupClasses['orange--text'] = true
+            } else {
+              item.isActive = false
+              item.groupClasses['orange--text'] = false
+            }
+          })
+          this.completedItems = resetCompletedItems
+        }, 0)
       }
     }
   },
   watch: {
     completedItems: {
       handler(newValue, oldValue) {
-        let longIdxCollection = []
-        let shortIdxCollection = []
-        if (newValue.length > oldValue.length) {
-          longIdxCollection = newValue
-          shortIdxCollection = oldValue
-        } else if (newValue.length < oldValue.length){
-          longIdxCollection = oldValue
-          shortIdxCollection = newValue
+        if(newValue !== oldValue) {
+          let longIdxCollection = []
+          let shortIdxCollection = []
+          if (newValue.length > oldValue.length) {
+            longIdxCollection = newValue
+            shortIdxCollection = oldValue
+          } else if (newValue.length < oldValue.length){
+            longIdxCollection = oldValue
+            shortIdxCollection = newValue
+          }
+          let difference = longIdxCollection.filter(elem => !shortIdxCollection.includes(elem))
+          const newCompleted = newValue.includes(difference[0])
+          let editTodo = {
+            completed: newCompleted,
+            item: this.todoItems[difference[0]].item
+          }
+          this.todoItems[difference[0]] = editTodo
+          FirebaseService.postTodos(this.userEmail, this.todoItems)
+          let sortedCompletedItems = this.completedItems.sort((a, b) => a - b)
+          this.completedItems = sortedCompletedItems
         }
-        let difference = longIdxCollection.filter(elem => !shortIdxCollection.includes(elem))
-        const newCompleted = newValue.includes(difference[0])
-        let editTodo = {
-          completed: newCompleted,
-          item: this.todoItems[difference[0]].item
-        }
-        this.todoItems[difference[0]] = editTodo
-        FirebaseService.postTodos(this.userEmail, this.todoItems)
       }
     }
   }

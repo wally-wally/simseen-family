@@ -65,9 +65,7 @@ export default {
   data() {
     return {
       menus: this.noMenu === 1 ? ['', '', '', '', '', ''] : this.dinnerMenus,
-      dinnerRules: [
-        v => v.length <= 8 || '최대 8자까지 작성 가능합니다.'
-      ],
+      dinnerRules: [],
       noDinnerDialog: false,
       dinnerDialog: false,
       dinnerAlert: '',
@@ -75,6 +73,11 @@ export default {
       noWriteMenu: 0,
       valid: true
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.dinnerRules = [v => v.length <= 8 || '최대 8자까지 작성 가능합니다.']
+    }, 1000)
   },
   methods: {
     async postDinner(status) {

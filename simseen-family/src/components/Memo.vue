@@ -154,7 +154,8 @@ export default {
       resetDialog: false,
       postDialog: false,
       tempDialog: false,
-      postComplete: 0
+      postComplete: 0,
+      tempAlert: 0
     }
   },
   created() {

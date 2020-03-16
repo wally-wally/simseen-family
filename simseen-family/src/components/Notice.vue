@@ -312,9 +312,9 @@ export default {
         if (this.imgFiles) {
           this.imgFiles.forEach(imgFile => {
             if (imgFile.size < 1000000) {
-              this.imgUploadTime += 1
+              this.imgUploadTime += 1.5
             } else {
-              this.imgUploadTime += (parseInt(imgFile.size / 1000000)) + 1
+              this.imgUploadTime += (parseInt(imgFile.size / 1000000)) + 1.5
             }
             let reader = new FileReader()
             reader.onload = event => {

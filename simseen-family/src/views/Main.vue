@@ -1,7 +1,7 @@
 <template>
   <div class="main-wrapper">
-    <Notice data-aos="fade-down" data-aos-duration="2000" data-aos-once="true"></Notice>
-    <Bible data-aos="fade-down" data-aos-delay="1000" data-aos-duration="2000" data-aos-once="true"></Bible>
+    <Bible data-aos="fade-down" data-aos-duration="2000" data-aos-once="true"></Bible>
+    <Notice data-aos="fade-down" data-aos-delay="1000" data-aos-duration="2000" data-aos-once="true"></Notice>
     <Dinner data-aos="fade-down" data-aos-delay="2000" data-aos-duration="2000" data-aos-once="true"></Dinner>
   </div>
 </template>

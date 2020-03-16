@@ -10,9 +10,12 @@
     </div>
     <v-dialog v-model="dialog">
       <v-card>
-        <v-card-title><span class="menu-dialog-title">이번주 식단</span></v-card-title>
-        <v-card-text class="px-6 pb-1">
-          <div v-for="i in weeklyDinnerMenus.length" :key="i" class="dinner-menu-form">
+        <v-card-title class="d-block pb-2 mb-3" :style="{ borderBottom: '1px solid lightgray'}">
+          <div class="menu-dialog-title">이번주 식단</div>
+          <div class="weekly-alert">(이번주에 등록된 식단만 표시됩니다.)</div>
+        </v-card-title>
+        <v-card-text v-if="weeklyDinnerMenus.length" class="px-6 pb-1">
+          <div v-for="i in weeklyDinnerMenus.length" :key="i" class="dinner-menu-form" :style="{ 'backgroundColor': todayCheck(weeklyDinnerMenus[i - 1].date) ? '#F9F6E6' : '#FFFFFF' }">
             <div v-if="weeklyDinnerMenus[i - 1].date.getDay() !== 6" :class="weeklyDinnerMenus[i - 1].date.getDay() === 0 ? 'sunday-check' : 'dinner-menu-dialog'">
               {{ weeklyDinnerMenus[i - 1].date.toLocaleString().slice(2, 11) }} ({{ dayOfTheWeek[weeklyDinnerMenus[i - 1].date.getDay()] }})
             </div>
@@ -26,7 +29,12 @@
             </div>
           </div>
         </v-card-text>
-        <v-card-actions class="pt-0 pb-1 pr-6">
+        <v-card-text v-else class="px-6 pb-1" >
+          <div class="no-weekly-dinner">
+            이번주에 등록된 메뉴가 없습니다.
+          </div>
+        </v-card-text>
+        <v-card-actions class="pt-2 pb-4 pr-6">
           <span></span>
           <v-spacer></v-spacer>
           <v-btn small color="#E6CC00" @click="dialog = false">닫기</v-btn>
@@ -70,6 +78,7 @@
         <p class="text-center login-please">보고 싶으면 먼저 로그인을 하세요.</p>
       </div>
     </div>
+    <DinnerCart v-if="this.$route.name === 'main' && this.familyAuth"></DinnerCart>
   </div>
 </template>
 
@@ -77,11 +86,13 @@
 import { mapState, mapGetters } from 'vuex'
 import FirebaseService from '@/services/FirebaseService'
 import DinnerEdit from '@/components/DinnerEdit'
+import DinnerCart from '@/components/DinnerCart'
 
 export default {
   name: 'Dinner',
   components: {
-    DinnerEdit
+    DinnerEdit,
+    DinnerCart
   },
   data() {
     return {
@@ -124,25 +135,47 @@ export default {
     async getDinner() {
       this.dinnerData = await FirebaseService.getDinner()
       this.findDinner(this.dinnerData)
-      this.findWeeklyDinner(this.dinnerData)
+      this.findWeeklyDinner()
     },
     async postDinner() {
       this.dinnerData = await FirebaseService.getDinner()
       this.findDinner(this.dinnerData)
-      this.findWeeklyDinner(this.dinnerData)
+      this.findWeeklyDinner()
     },
-    findWeeklyDinner(dinnerData) {
+    findWeeklyDinner() {
       let todayDateValue = Date.parse(this.todayValue[1])
-      let dayObj = {
-        componentName: 'Dinner-Last',
-        checkDate: dinnerData[0].date.toLocaleDateString()
+      // let dayObj = {
+      //   componentName: 'Dinner-Last',
+      //   checkDate: dinnerData[0].date.toLocaleDateString()
+      // }
+      // this.$store.commit('convertDateValue', dayObj)
+      // let lastDateValue = Date.parse(this.lastDinnerCheckDayValue)
+      // let diffDateValue = Math.abs(lastDateValue - todayDateValue) / 86400000
+      // console.log(this.lastDinnerCheckDayValue)
+      // console.log(todayDateValue, lastDateValue, diffDateValue)
+      // let todayDayOfTheWeek = this.todayDate.getDay()
+      // console.log(diffDateValue, todayDayOfTheWeek)
+      // let startIdx = diffDateValue - (6 - todayDayOfTheWeek)
+
+      let thisWeeklyExist = this.dinnerData.some(data => {
+        let checkDate = Date.parse(data.date)
+        let todayDate = this.todayDate.getDay()
+        let diffVal = (checkDate - todayDateValue) / 86400000
+        return diffVal >= 0 - todayDate && diffVal <= 6 - todayDate ? true : false
+      })
+      
+      if (thisWeeklyExist) {
+        let sliceCount = this.dinnerData[0].date.getDay() + 1
+        this.weeklyDinnerMenus = this.dinnerData.slice(0, sliceCount).reverse().filter(data => {
+          let diffDay = Math.ceil((Date.parse(this.dinnerData[0].date) - Date.parse(data.date)) / 86400000)
+          return diffDay <= sliceCount - 1 ? true : false
+        })
       }
-      this.$store.commit('convertDateValue', dayObj)
-      let lastDateValue = Date.parse(this.lastDinnerCheckDayValue)
-      let diffDateValue = Math.abs(lastDateValue - todayDateValue) / 86400000
-      let todayDayOfTheWeek = this.todayDate.getDay()
-      let startIdx = diffDateValue - (6 - todayDayOfTheWeek)
-      this.weeklyDinnerMenus = this.dinnerData.slice(startIdx, startIdx + 7).reverse()
+    },
+    todayCheck(date) {
+      let todayMonth = this.todayDate.getMonth() + 1
+      let todayDay = this.todayDate.getDay()
+      return todayMonth === date.getMonth() + 1 && todayDay === date.getDay() ? true : false
     }
   },
   watch: {
@@ -187,12 +220,26 @@ export default {
     font-family: 'Stylish';
   }
 
+  .weekly-alert {
+    font-family: 'Stylish';
+    font-size: 14px;
+    color: #5c5c5c;
+  }
+
   .dinner-select,
   .login-please {
     font-family: 'Gaegu';
     font-size: 18px;
     color: #7a7a7a;
     margin-top: 3px;
+  }
+
+  .no-weekly-dinner {
+    font-family: 'Gaegu';
+    font-size: 18px;
+    color: #7a7a7a;
+    margin: 0.5em 0;
+    text-align: center;
   }
 
   .dinner-menu-detail {
@@ -212,7 +259,7 @@ export default {
   .dinner-menu-form {
     padding-bottom: 10px;
     border-bottom: 1px solid lightgray;
-    margin-bottom: 5px;
+    margin: 0.3em 0 0.6em;
   }
 
   .dinner-menu-dialog {
