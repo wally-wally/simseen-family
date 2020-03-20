@@ -25,12 +25,3 @@ yarn-error.log*
 # secret files
 src/utils/encryptDecryptToken.js
 src/utils/dinnerEditAuth.js
-
-# firebase files
-/.firebase
-.firebaserc
-database.rules.json
-firebase.json
-firestore.indexes.json
-firestore.rules
-storage.rules
