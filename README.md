@@ -1,36 +1,106 @@
-# :globe_with_meridians: simseen family webpage
+# :family: Simseen Family webpage
 
 <br>
 
 ## :one: Overview
 
-- simseen family를 위한 웹페이지 입니다.
-- Main Tech Stack : `Vue.js`, `Firebase`
+- This project is homepage for my family(Simseen Family)
+  - Most features must be 'Simseen Family' certified before they can be used.
+- This homepage is optimized for mobile screens at <u>Google Chrome</u> or <u>Safari</u>.
+  - <b>I strongly recommend Google Chrome.</b>
 
 <br>
 
-## :two: Run
+## :two: Tech Stack
 
-### 1.Local Environment
+:round_pushpin: <b>Framework</b> : `Vue.js`
 
-repository를 clone 받고 아래와 같은 명령어를 입력하여 구동에 필요한 library를 설치한다.
+:round_pushpin: <b>Database, Backend</b> : `Firebase`
 
-```bash
-npm install
-```
+:round_pushpin: <b>Library</b> : `jwt-decode`, `Vuetify`, `AOS`, `Chart.js`, `Vueperslides(추후 사용예정)`
 
-library 설치 완료 후 local 환경에서 서버를 켜고 localhost로 잡힌 주소(`localhost:8080`)로 접속하여 확인한다.
+:round_pushpin: <b>Development Enviornment</b> : Windows 10 Home, Node.js 10.16.3, Vue CLI 4.2.3
 
-```bash
-npm run serve
-```
-
-아래와 같은 화면이 나오면 성공(모바일 환경에 적합하게 application을 만들었기 때문에 컴퓨터에서는 창의 너비를 최소한으로 줄여서 확인)
-
-<img src="https://user-images.githubusercontent.com/52685250/75637014-e9f83980-5c66-11ea-845d-dd332fccad91.JPG" alt="simseen-family" width="350">
+:round_pushpin: <b>Using Editor</b> : Visual Studio Code
 
 <br>
 
-### 2.deploy URL
+## :three: Quick Start
 
-https://simseen-family.firebaseapp.com/
+:heavy_check_mark: <b>Requirement</b>
+
+- `Node.js` : 10.16 or higher
+- `Vue CLI` : 3.0 or higher
+
+:heavy_check_mark: <b>Installation</b>
+
+```bash
+$ cd simseen-family
+$ npm install
+```
+
+:heavy_check_mark: <b>Usage</b>
+
+```bash
+$ npm run serve
+```
+
+<br>
+
+## :four: Homepage Configuration(Main Features)
+
+### 1.Main Page
+
+<img src="https://user-images.githubusercontent.com/52685250/77155334-ac0d6900-6ae0-11ea-8b4d-7d7b1c3adf67.png" width="700">
+
+- Must be login to the Simseen family user to see the contents.
+
+<br>
+
+### 2.My Todo List, Memo Page
+
+<img src="https://user-images.githubusercontent.com/52685250/77155340-add72c80-6ae0-11ea-83a7-2cc884da79e1.png" width="700">
+
+<br>
+
+### 3.Dinner List Page
+
+<img src="https://user-images.githubusercontent.com/52685250/77155341-add72c80-6ae0-11ea-97e1-91ff01361570.png" width="700">
+
+<br>
+
+### 4.Notice Page
+
+<img src="https://user-images.githubusercontent.com/52685250/77155665-3524a000-6ae1-11ea-99c1-1fc3a870fbf1.png" width="700">
+
+- Posting CRUD functions have been implemented.
+
+<br>
+
+### 5.Etc
+
+<img src="https://user-images.githubusercontent.com/52685250/77155344-af085980-6ae0-11ea-8336-38fa2e4941d2.png" width="700">
+
+- If you login as a regular user, you aren't able to see contents of other menu.
+
+<br>
+
+## :five: Contributing
+
+Please fork this project first and pick one of issues you can handle then shoot us your pull request.
+
+It would be nice to write and post corrections on README when pull request.
+
+<br>
+
+## :six: Deploy URL
+
+:point_right: https://simseen-family.firebaseapp.com/
+
+<br>
+
+## :seven: Copyright
+
+All copyrights on the code of this project and the homepage are in <a href="https://github.com/wally-wally" target="_blank">wally-wally</a>.
+
+If you use the project code and the homepage without permission, authorization, you may be subject to legal punishment.
