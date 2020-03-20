@@ -1,4 +1,4 @@
-# :family: Simseen Family webpage <img src="https://img.shields.io/badge/public_ver-1.0-blue"><img src="https://img.shields.io/badge/develop_ver-3.11-lightgrey"> 
+# :family: Simseen Family webpage <img src="https://img.shields.io/badge/public_ver-1.0-blue">  <img src="https://img.shields.io/badge/develop_ver-3.11-lightgrey"> 
 
 <br>
 
@@ -95,7 +95,7 @@ It would be nice to write and post corrections on README when pull request.
 
 ## :six: Deploy URL
 
-:point_right: https://simseen-family.firebaseapp.com/
+:point_right: https://abit.ly/simseen-family
 
 <br>
 
