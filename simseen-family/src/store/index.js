@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { router } from '@/routes/index.js'
 import VueSession from 'vue-session'
 import jwtDecode from 'jwt-decode'
 import FirebaseService from '@/services/FirebaseService'
-import { encryptToken, decryptToken } from './encryptDecryptToken.js'
-// import axios from 'axios'
+import { encryptToken, decryptToken } from '@/utils/encryptDecryptToken.js'
 
 Vue.use(VueSession)
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+export const store = new Vuex.Store({
   state: {
     user: '',
     email: '',
@@ -27,6 +27,8 @@ export default new Vuex.Store({
     clickBible: false,
     clickMemo: false,
     clickInit: true,
+    allDinnerData: [],
+    analysisComplete: false,
     todayDate: new Date(),
     todayElements: new Date().toLocaleDateString().split('.').splice(0, 3),
     bibleCheckDayValue: null,
@@ -55,6 +57,9 @@ export default new Vuex.Store({
       state.email = ''
       state.familyAuth = false
       state.logoutDialog = false
+      if(!state.clickTitle) {
+        router.push('/')
+      }
     },
     checkSession(state) {
       sessionStorage.removeItem('newTime')

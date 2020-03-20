@@ -103,8 +103,9 @@
 <script>
 import axios from 'axios'
 import FirebaseService from '@/services/FirebaseService'
-import NoticeMain from '@/components/NoticeMain'
-import NoticeTable from '@/components/NoticeTable'
+import NoticeMain from '@/components/Notice/NoticeMain'
+import NoticeTable from '@/components/Notice/NoticeTable'
+import { noticeRules } from '@/utils/noticeRules'
 
 export default {
   name: 'Notice',
@@ -118,22 +119,14 @@ export default {
       dialog: false,
       valid: true,
       title: null,
-      titleRules: [
-        v => !!v || '제목을 작성하세요.',
-        v => (v && v.length <= 15) || '최대 15자까지 작성 가능합니다.'
-      ],
+      titleRules: noticeRules.titleRules,
       body: null,
-      bodyRules: [
-        v => !!v || '내용을 작성하세요.',
-        v => (v && v.length >= 5) || '최소 5자 이상 작성해야 합니다.'
-      ],
+      bodyRules: noticeRules.bodyRules,
       showImageInput: true,
       imgFiles: [],
       imgUrls: [],
       imgUploadTime: 0,
-      imgRules: [
-        v => (v.length <= 3) || '최대 3장까지 첨부할 수 있습니다.'
-      ],
+      imgRules: noticeRules.imgRules,
       waitingMessage: '',
       loadingState: 0,
       editState: 0,

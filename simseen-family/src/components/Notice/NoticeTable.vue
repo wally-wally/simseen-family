@@ -14,16 +14,6 @@
       <template v-slot:item.created_at="{ item }">
         {{ item.created_at | shortedDate }}
       </template>
-      <!-- <template v-slot:expanded-item="{ headers, item }">
-        <tr ></tr> -->
-        <!-- <td class="pa-4" :colspan="headers.length">
-          <p class="text-center" v-if="item.imgUrl !== ''">
-            <img :src="item.imgUrl" alt="notice-img" id="notice-img" style="margin-left: auto; margin-right: auto; display: block;">
-          </p>
-          <hr v-if="item.imgUrl !== ''">
-          <div class="mt-2" style="line-height: 24px;">{{ item.body }}</div>
-        </td> -->
-      <!-- </template> -->
     </v-data-table>
     <v-dialog v-model="dialog">
       <v-card>
@@ -79,7 +69,7 @@
 </template>
 
 <script>
-import ZoomInImage from '@/components/ZoomInImage'
+import ZoomInImage from '@/components/common/ZoomInImage'
 import FirebaseService from '@/services/FirebaseService'
 
 export default {
@@ -194,6 +184,56 @@ export default {
   .img-section #more-img-button .img-more-count {
     font-size: 12px;
     font-family: 'Noto Sans KR';
+  }
+
+  .all-wrapper {
+    pointer-events: none;
+  }
+
+  .background-black {
+    position: fixed;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 9999px;
+    z-index: 100;
+  }
+
+  .loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #E6CC00;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    animation: spin 2s linear infinite;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+  }
+
+  .loading-alert::after {
+    position: fixed;
+    top: 61%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    content: '조금만 기다려주세요...';
+    font-family: 'Stylish';
+    font-size: 20px;
+    font-weight: 550;
+    letter-spacing: -0.01em;
+    text-shadow: 2px 2px 5px black;
+    padding-top: 5px;
+    color: #fff;
+    z-index: 100;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
   }
 
   @media (orientation: portrait) {

@@ -22,7 +22,7 @@
       <v-card>
         <v-card-text class="px-4 pt-4 pb-2" id="notice-card">
           <p class="text-center">
-            <img src="../assets/dinner_icon.png" alt="dinner_icon" width="200">
+            <img src="../../assets/images/dinner_icon.png" alt="dinner_icon" width="200">
           </p>
           <p class="text-center mt-6 mb-4" style="font-size: 1.4em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">{{ dinnerAlert }} 완료!</p>
         </v-card-text>
@@ -38,7 +38,7 @@
       <v-card>
         <v-card-text class="px-4 pt-4 pb-2" id="notice-card">
           <p class="text-center">
-            <img src="../assets/dinner_icon.png" alt="dinner_icon" width="200">
+            <img src="../../assets/images/dinner_icon.png" alt="dinner_icon" width="200">
           </p>
           <p class="text-center mt-6 mb-4" style="font-size: 1.4em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">이건 나만 할 수 있다고^^</p>
         </v-card-text>
@@ -53,8 +53,9 @@
 </template>
 
 <script>
-import DinnerWish from '@/components/DinnerWish'
+import DinnerWish from '@/components/Dinner/DinnerWish'
 import FirebaseService from '@/services/FirebaseService'
+import { dinnerEditAuthCheck } from '@/utils/dinnerEditAuth'
 
 export default {
   name: 'DinnerEdit',
@@ -81,8 +82,11 @@ export default {
   },
   methods: {
     async postDinner(status) {
-      const postCondition = (this.$store.state.user === '김영숙' && this.$store.state.email.split('@')[0] === 'k24116297') ||
-                            (this.$store.state.user === '심규현' && this.$store.state.email.split('@')[0] === 'wallys0213')
+      let userData = {
+        name: this.$store.state.user,
+        email: this.$store.state.email.split('@')[0]
+      }
+      const postCondition = dinnerEditAuthCheck(userData)
       if (this.$store.state.familyAuth && postCondition) {
         this.dinnerAlert = status ? '수정' : '등록'
         await FirebaseService.postDinner(this.pickedDate, this.menus)

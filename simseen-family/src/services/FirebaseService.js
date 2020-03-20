@@ -1,8 +1,7 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
-// import 'firebase/storage'
 import 'firebase/auth'
-import store from '../store'
+import { store } from '@/store/index.js'
 
 const EMAILS = 'emails'
 const DINNER = 'dinner'
@@ -12,19 +11,23 @@ const BIBLE = 'bible'
 const NOTICE = 'notice'
 const MEMO = 'memo'
 const TODOS = 'todos'
+const UPDATES = 'updates'
 
 const API_KEY = process.env.VUE_APP_FIREBASE_API_KEY
+const AUTH_DOMAIN = process.env.VUE_APP_FIREBASE_AUTH_DOMAIN
 const DATABASE_URL = process.env.VUE_APP_FIREBASE_DATABASE_URL
+const PROJECT_ID = process.env.VUE_APP_FIREBASE_PROJECT_ID
+const STORAGE_BUCKET = process.env.VUE_APP_FIREBASE_STORAGE_BUCKET
 const MESSAGINGSENDERID = process.env.VUE_APP_FIREBASE_MESSAGINGSENDERID
 const APP_ID = process.env.VUE_APP_FIREBASE_APP_ID
 const MEASUREMENTID = process.env.VUE_APP_FIREBASE_MEASUREMENTID
 
 const firebaseConfig = {
   apiKey: API_KEY,
-  authDomain: "simseen-family.firebaseapp.com",
+  authDomain: AUTH_DOMAIN,
   databaseURL: DATABASE_URL,
-  projectId: "simseen-family",
-  storageBucket: "simseen-family.appspot.com",
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
   messagingSenderId: MESSAGINGSENDERID,
   appId: APP_ID,
   measurementId: MEASUREMENTID
@@ -33,7 +36,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig)
 
 const firestore = firebase.firestore()
-// const firestorage = firebase.storage().ref()
 
 export default {
 	getEmail() {
@@ -121,6 +123,18 @@ export default {
 				.get()
 				.then(docSnapshots => {
 					return docSnapshots.docs.find(doc => doc.id === userEmail).data().memo
+				})
+	},
+	getUpdates() {
+		const updatesCollection = firestore.collection(UPDATES)
+		return updatesCollection
+				.orderBy('date', 'desc')
+				.get()
+				.then((docSnapshots) => {					
+					return docSnapshots.docs.map((doc) => {
+						let data = doc.data()
+						return data
+					})
 				})
 	},
 	postDinnerCart(dinnercart) {

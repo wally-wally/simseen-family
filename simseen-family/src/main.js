@@ -1,24 +1,26 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-import router from './router'
-import store from './store'
+import { router } from '@/routes/index.js'
+import { store } from '@/store/index.js'
 
 import Vuetify from 'vuetify/lib'
 import 'vuetify/dist/vuetify.min.css'
 import 'font-awesome/css/font-awesome.min.css'
+
+import ChartPlugin from './plugins/ChartPlugin.js'
 
 import * as Vueperslides from 'vueperslides'
 import 'vueperslides/dist/vueperslides.css'
 
 import AOS from 'aos'
 import 'aos/dist/aos.css'
-// import vuetify from './plugins/vuetify';
 
 Vue.prototype.$EventBus = new Vue();
 Vue.config.productionTip = false
 
 Vue.use(Vuetify)
+Vue.use(ChartPlugin)
 Vue.use(Vueperslides)
 Vue.use(AOS)
 AOS.init()
@@ -38,6 +40,5 @@ new Vue({
   beforeCreate() {
     this.$store.dispatch('getMemberInfo')
   },
-  // vuetify,
   render: h => h(App)
 }).$mount('#app')

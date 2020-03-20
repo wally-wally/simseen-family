@@ -3,8 +3,10 @@ node_modules
 /dist
 
 # local env files
+.env
 .env.local
 .env.*.local
+.env.development
 
 # Log files
 npm-debug.log*
@@ -20,4 +22,15 @@ yarn-error.log*
 *.sln
 *.sw?
 
-src/encryptDecryptToken.js
+# secret files
+src/utils/encryptDecryptToken.js
+src/utils/dinnerEditAuth.js
+
+# firebase files
+/.firebase
+.firebaserc
+database.rules.json
+firebase.json
+firestore.indexes.json
+firestore.rules
+storage.rules
