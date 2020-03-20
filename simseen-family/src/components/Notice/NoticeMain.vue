@@ -38,7 +38,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import ZoomInImage from '@/components/ZoomInImage'
+import ZoomInImage from '@/components/common/ZoomInImage'
 
 export default {
   name: 'NoticeMain',

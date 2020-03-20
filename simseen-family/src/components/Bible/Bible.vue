@@ -4,17 +4,22 @@
       <div class="bible-title-body">
         <i class="fas fa-bible"></i>
       </div>
-      <div class="bible-all-icon" @click="goAllBible()" v-if="this.$store.state.familyAuth">
+      <div class="bible-all-icon" @click="goAllBible()" v-if="this.familyAuth">
         <i class="far fa-list-alt"></i>
       </div>
     </div>
-    <div v-if="selectBible.length !== 0" class="bible-content">
+    <div v-if="selectBible.length !== 0 && this.familyAuth" class="bible-content">
       <div class="bible-body">{{ selectBible.body }}</div>
       <div class="bible-position text-right">{{ selectBible.position }}</div>
     </div>
+    <div v-else-if="selectBible.length !== 0 && !this.familyAuth" class="bible-content">
+      <p class="text-center pa-2">
+        <strong>심슨패밀리 인증이 필요합니다.</strong>
+      </p>
+    </div>
     <div v-else class="bible-content">
       <p class="text-center pa-2">
-        <strong>등록된 성경구절이 없습니다.</strong>
+        <strong>데이터를 불러오는 중입니다.</strong>
       </p>
     </div>
   </div>
@@ -32,29 +37,12 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isLogin', 'todayDate'])
+    ...mapState(['familyAuth'])
   },
   created() {
     this.getBible()
   },
   methods: {
-    // async getBible() {
-    //   let bibleContents = await FirebaseService.getBible()
-    //   for (let i = 0; i < bibleContents.length; i++) {
-    //     let dayObj = {
-    //       componentName: 'Bible',
-    //       checkDate: bibleContents[i].date.toLocaleDateString()
-    //     }
-    //     this.$store.commit('convertDateValue', dayObj)
-    //     let todayValue = this.$store.getters.todayValue[0]
-    //     let checkDayValue = this.$store.state.bibleCheckDayValue
-    //     if (0 <= checkDayValue - todayValue && checkDayValue - todayValue < 7) {
-    //       this.thisWeekBible = bibleContents[i]
-    //       break
-    //     }
-    //   }
-    //   this.loadingState = 1
-    // },
     async getBible() {
       let bibleContents = await FirebaseService.getBible()
       this.selectBible = bibleContents.find(bible => bible.select)

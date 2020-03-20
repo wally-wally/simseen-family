@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import Notice from '@/components/Notice'
-import Bible from '@/components/Bible'
-import Dinner from '@/components/Dinner'
+import Notice from '@/components/Notice/Notice'
+import Bible from '@/components/Bible/Bible'
+import Dinner from '@/components/Dinner/Dinner'
 
 export default {
   name: 'Content',

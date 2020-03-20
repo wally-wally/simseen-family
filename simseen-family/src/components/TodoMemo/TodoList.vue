@@ -40,10 +40,6 @@
                     <v-list-item-content class="py-2">
                       <v-list-item-title :class="item.completed ? 'completed-item' : ''" v-text="item.item"></v-list-item-title>
                     </v-list-item-content>
-                    <!-- <v-list-item-action>
-                      <i v-if="!active" class="far fa-star" style="color: grey;"></i>
-                      <i v-else class="fas fa-star" style="color: yellow;"></i>
-                    </v-list-item-action> -->
                   </template>
                 </v-list-item>
               </v-col>
@@ -98,8 +94,7 @@ export default {
       selectTodoIndex: 0,
       init: 1,
       loadingStatus: 1,
-      deleteIconWidth: 1,
-      // deleteStatus: 0
+      deleteIconWidth: 1
     }
   },
   created() {
@@ -146,8 +141,6 @@ export default {
         this.todo = ''
         this.init = 0
       } else { // 삭제
-        // items.splice(this.selectTodoIndex, 1)
-        // this.deleteStatus = 1
         let sendItems = []
         let resetCompletedItems = []
         let deleteCheck = 0
@@ -172,26 +165,27 @@ export default {
         this.todoDialog = false
         this.init = 0
         this.todoItems = sendItems
-        // this.deleteStatus = 1
-        setTimeout(() => {
-          this.$refs.form.items.forEach((item, idx) => {
-            if (resetCompletedItems.includes(idx)) {
-              item.isActive = true
-              item.groupClasses['orange--text'] = true
-            } else {
-              item.isActive = false
-              item.groupClasses['orange--text'] = false
-            }
-          })
-          this.completedItems = resetCompletedItems
-        }, 0)
+        if (this.todoItems.length) {
+          setTimeout(() => {
+            this.$refs.form.items.forEach((item, idx) => {
+              if (resetCompletedItems.includes(idx)) {
+                item.isActive = true
+                item.groupClasses['orange--text'] = true
+              } else {
+                item.isActive = false
+                item.groupClasses['orange--text'] = false
+              }
+            })
+            this.completedItems = resetCompletedItems
+          }, 0)
+        }
       }
     }
   },
   watch: {
     completedItems: {
       handler(newValue, oldValue) {
-        if(newValue !== oldValue) {
+        if(newValue !== oldValue && this.completedItems.length) {
           let longIdxCollection = []
           let shortIdxCollection = []
           if (newValue.length > oldValue.length) {

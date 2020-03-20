@@ -4,8 +4,13 @@
       <div class="dinner-title-body">
         <i class="fas fa-utensils"></i>
       </div>
-      <div class="dinner-weekly-icon" v-if="this.familyAuth" @click.stop="dialog = true">
-        <i class="fas fa-clipboard"></i>
+      <div class="dinner-side-icons">
+        <div class="dinner-lab-icon" v-if="this.$route.name === 'DinnerEdit'" @click="goDinnerLab">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="dinner-weekly-icon" v-if="this.familyAuth" @click.stop="dialog = true">
+          <i class="fas fa-clipboard"></i>
+        </div>
       </div>
     </div>
     <v-dialog v-model="dialog">
@@ -57,8 +62,8 @@
           <div class="col-12" v-if="noMenu === 1">
             <div class="text-center">등록된 저녁 메뉴가 없습니다.</div>
           </div>
-          <div class="col-6 py-1" v-else v-for="menu in dinnerMenus" :key="menu">
-            <div class="text-center">{{ menu }}</div>
+          <div class="col-6 py-1" v-else v-for="i in dinnerMenus.length" :key="i">
+            <div class="text-center">{{ dinnerMenus[i - 1] }}</div>
           </div>
         </div>
         <div v-else>
@@ -67,13 +72,13 @@
       </div>
       <div v-else-if="this.isLogin && !this.familyAuth" class="mt-2">
         <p class="text-center">
-          <img src="../assets/dinner_icon.png" alt="dinner_icon" width="100">
+          <img src="../../assets/images/dinner_icon.png" alt="dinner_icon" width="100">
         </p>
         <p class="text-center login-please">음...? 우리 가족이 아닌데? 빠이^^</p>
       </div>
       <div v-else class="mt-2">
         <p class="text-center">
-          <img src="../assets/dinner_icon.png" alt="dinner_icon" width="100">
+          <img src="../../assets/images/dinner_icon.png" alt="dinner_icon" width="100">
         </p>
         <p class="text-center login-please">보고 싶으면 먼저 로그인을 하세요.</p>
       </div>
@@ -85,8 +90,8 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import FirebaseService from '@/services/FirebaseService'
-import DinnerEdit from '@/components/DinnerEdit'
-import DinnerCart from '@/components/DinnerCart'
+import DinnerEdit from '@/components/Dinner/DinnerEdit'
+import DinnerCart from '@/components/Dinner/DinnerCart'
 
 export default {
   name: 'Dinner',
@@ -134,6 +139,7 @@ export default {
     },
     async getDinner() {
       this.dinnerData = await FirebaseService.getDinner()
+      this.$store.state.allDinnerData = this.dinnerData
       this.findDinner(this.dinnerData)
       this.findWeeklyDinner()
     },
@@ -144,19 +150,6 @@ export default {
     },
     findWeeklyDinner() {
       let todayDateValue = Date.parse(this.todayValue[1])
-      // let dayObj = {
-      //   componentName: 'Dinner-Last',
-      //   checkDate: dinnerData[0].date.toLocaleDateString()
-      // }
-      // this.$store.commit('convertDateValue', dayObj)
-      // let lastDateValue = Date.parse(this.lastDinnerCheckDayValue)
-      // let diffDateValue = Math.abs(lastDateValue - todayDateValue) / 86400000
-      // console.log(this.lastDinnerCheckDayValue)
-      // console.log(todayDateValue, lastDateValue, diffDateValue)
-      // let todayDayOfTheWeek = this.todayDate.getDay()
-      // console.log(diffDateValue, todayDayOfTheWeek)
-      // let startIdx = diffDateValue - (6 - todayDayOfTheWeek)
-
       let thisWeeklyExist = this.dinnerData.some(data => {
         let checkDate = Date.parse(data.date)
         let todayDate = this.todayDate.getDay()
@@ -176,6 +169,9 @@ export default {
       let todayMonth = this.todayDate.getMonth() + 1
       let todayDay = this.todayDate.getDay()
       return todayMonth === date.getMonth() + 1 && todayDay === date.getDay() ? true : false
+    },
+    goDinnerLab() {
+      this.$router.push('/dinner/lab')
     }
   },
   watch: {
@@ -207,7 +203,23 @@ export default {
     font-family: 'Yeon Sung';
   }
 
+  .dinner-title .dinner-lab-icon {
+    display: inline-block;
+    font-weight: bold;
+    border-radius: 10px 10px;
+    border: 1px solid lightgray;
+    background-color: #FDF0E6;
+    padding: 0 0.5rem;
+    margin-right: 0.25rem;
+  }
+
+  .dinner-title .dinner-lab-icon .fas::after {
+    content: '분석실';
+    font-family: 'Stylish';
+  }
+
   .dinner-title .dinner-weekly-icon {
+    display: inline-block;
     font-weight: bold;
     border-radius: 10px 10px;
     border: 1px solid lightgray;

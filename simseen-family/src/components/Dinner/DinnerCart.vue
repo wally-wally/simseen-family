@@ -16,7 +16,7 @@
       color="#E6CC00"
       outlined
       auto-grow
-      :style="{ fontFamily: 'Poor Story' }"></v-textarea>
+      :style="{ fontFamily: 'Poor Story', marginBottom: '-8px' }"></v-textarea>
     <v-card-actions class="pt-0 pb-1 px-0" :style="{ fontFamily: 'Poor Story', fontSize: '14px' }">
       <span class="alert-section">{{ dinnerCartAlert }}</span>
       <v-spacer></v-spacer>
