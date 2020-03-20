@@ -51,7 +51,7 @@ $ npm run serve
 
 ### 1.Main Page
 
-<img src="https://user-images.githubusercontent.com/52685250/77155334-ac0d6900-6ae0-11ea-8b4d-7d7b1c3adf67.png" width="700">
+<img src="https://user-images.githubusercontent.com/52685250/77155334-ac0d6900-6ae0-11ea-8b4d-7d7b1c3adf67.png" width="800">
 
 - Must be login to the Simseen family user to see the contents.
 
@@ -59,19 +59,19 @@ $ npm run serve
 
 ### 2.My Todo List, Memo Page
 
-<img src="https://user-images.githubusercontent.com/52685250/77155340-add72c80-6ae0-11ea-83a7-2cc884da79e1.png" width="700">
+<img src="https://user-images.githubusercontent.com/52685250/77155340-add72c80-6ae0-11ea-83a7-2cc884da79e1.png" width="800">
 
 <br>
 
 ### 3.Dinner List Page
 
-<img src="https://user-images.githubusercontent.com/52685250/77155341-add72c80-6ae0-11ea-97e1-91ff01361570.png" width="700">
+<img src="https://user-images.githubusercontent.com/52685250/77155341-add72c80-6ae0-11ea-97e1-91ff01361570.png" width="800">
 
 <br>
 
 ### 4.Notice Page
 
-<img src="https://user-images.githubusercontent.com/52685250/77155665-3524a000-6ae1-11ea-99c1-1fc3a870fbf1.png" width="700">
+<img src="https://user-images.githubusercontent.com/52685250/77155665-3524a000-6ae1-11ea-99c1-1fc3a870fbf1.png" width="800">
 
 - Posting CRUD functions have been implemented.
 
@@ -79,7 +79,7 @@ $ npm run serve
 
 ### 5.Etc
 
-<img src="https://user-images.githubusercontent.com/52685250/77155344-af085980-6ae0-11ea-8336-38fa2e4941d2.png" width="700">
+<img src="https://user-images.githubusercontent.com/52685250/77155344-af085980-6ae0-11ea-8336-38fa2e4941d2.png" width="800">
 
 - If you login as a regular user, you aren't able to see contents of other menu.
 
