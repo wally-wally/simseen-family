@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import { loadView } from '@/utils/loadView.js'
 
 Vue.use(Router)
 
@@ -10,21 +11,21 @@ export const router = new Router({
     {
       path: '/',
       name: 'main',
-      component: () => import('@/views/MainPage')
+      component: loadView('MainPage')
     },
     {
       path: '/notice',
       name: 'notice',
-      component: () => import('@/views/NoticePage')
+      component: loadView('NoticePage')
     },
     {
       path: '/bible',
       name: 'bible',
-      component: () => import('@/views/BiblePage')
+      component: loadView('BiblePage')
     },
     {
       path: '/dinner',
-      component: () => import('@/views/DinnerPage'),
+      component: loadView('DinnerPage'),
       children: [
         {
           path: '',
@@ -41,12 +42,12 @@ export const router = new Router({
     {
       path: '/memo',
       name: 'memo',
-      component: () => import('@/views/MemoPage')
+      component: loadView('MemoPage')
     },
     {
       path: '*',
       name: 'NotFound',
-      component: () => import('@/views/NotFoundPage')
+      component: loadView('NotFoundPage')
     }
   ]
 })

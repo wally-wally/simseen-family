@@ -67,7 +67,7 @@
           </div>
         </div>
         <div v-else>
-          <DinnerEdit :dinnerMenus="dinnerMenus" :pickedDate="pickedDate" :noMenu="noMenu" @postDinner="postDinner"></DinnerEdit>
+          <DinnerEdit :dinnerMenus="dinnerMenus" :pickedDate="pickedDate" :noMenu="noMenu" @postDinner="getDinner"></DinnerEdit>
         </div>
       </div>
       <div v-else-if="this.isLogin && !this.familyAuth" class="mt-2">
@@ -83,7 +83,7 @@
         <p class="text-center login-please">보고 싶으면 먼저 로그인을 하세요.</p>
       </div>
     </div>
-    <DinnerCart v-if="this.$route.name === 'main' && this.familyAuth"></DinnerCart>
+    <DinnerMemo v-if="this.$route.name === 'main' && this.familyAuth"></DinnerMemo>
   </div>
 </template>
 
@@ -91,13 +91,13 @@
 import { mapState, mapGetters } from 'vuex'
 import FirebaseService from '@/services/FirebaseService'
 import DinnerEdit from '@/components/Dinner/DinnerEdit'
-import DinnerCart from '@/components/Dinner/DinnerCart'
+import DinnerMemo from '@/components/Dinner/DinnerMemo'
 
 export default {
   name: 'Dinner',
   components: {
     DinnerEdit,
-    DinnerCart
+    DinnerMemo
   },
   data() {
     return {
@@ -140,11 +140,6 @@ export default {
     async getDinner() {
       this.dinnerData = await FirebaseService.getDinner()
       this.$store.state.allDinnerData = this.dinnerData
-      this.findDinner(this.dinnerData)
-      this.findWeeklyDinner()
-    },
-    async postDinner() {
-      this.dinnerData = await FirebaseService.getDinner()
       this.findDinner(this.dinnerData)
       this.findWeeklyDinner()
     },

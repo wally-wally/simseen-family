@@ -5,7 +5,7 @@ import { store } from '@/store/index.js'
 
 const EMAILS = 'emails'
 const DINNER = 'dinner'
-const DINNERCART = 'dinnercart'
+const DINNERMEMO = 'dinnermemo'
 const DINNERWISH = 'dinnerwish'
 const BIBLE = 'bible'
 const NOTICE = 'notice'
@@ -87,15 +87,26 @@ export default {
 					})
 				})
 	},
-	getDinnerCart() {
-		const dinnerCartCollection = firestore.collection(DINNERCART)
-		return dinnerCartCollection
+	getShoppingCart() {
+		const dinnerMemoCollection = firestore.collection(DINNERMEMO)
+		return dinnerMemoCollection
 				.get()
 				.then((docSnapshots) => {				
 					return docSnapshots.docs.map((doc) => {
 						let data = doc.data()
-						return data.cart
-					})
+						return data
+					})[1]
+				})
+	},
+	getRecipeNote() {
+		const dinnerMemoCollection = firestore.collection(DINNERMEMO)
+		return dinnerMemoCollection
+				.get()
+				.then((docSnapshots) => {				
+					return docSnapshots.docs.map((doc) => {
+						let data = doc.data()
+						return data
+					})[0]
 				})
 	},
 	getDinnerWish() {
@@ -137,11 +148,18 @@ export default {
 					})
 				})
 	},
-	postDinnerCart(dinnercart) {
-		const dinnerCartDocument = firestore.collection(DINNERCART).doc('dinnercart')
-		return dinnerCartDocument.set({
-			cart: dinnercart
-		})
+	postDinnerMemo(data, idx) {
+		const storeDoc = idx === 0 ? 'shoppingcart' : 'recipenote'
+		const dinnerMemoDocument = firestore.collection(DINNERMEMO).doc(storeDoc)
+		if (idx === 0){
+			return dinnerMemoDocument.set({
+				shoppingcart: data
+			})
+		} else {
+			return dinnerMemoDocument.set({
+				recipe: data
+			})
+		}
 	},
 	postDinnerWish(dinnerwish) {
 		const dinnerWishDocument = firestore.collection(DINNERWISH).doc('dinnerwish')

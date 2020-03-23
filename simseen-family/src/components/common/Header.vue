@@ -63,7 +63,7 @@
           <div class="menu-dialog-title"><i class="fas fa-comment"></i>개발자 코멘트</div>
         </v-card-title>
         <v-card-text class="px-6 pb-1" :style="{ fontFamily: 'Poor Story' }">
-          <UpdateList></UpdateList>
+          <UpdateList :updates=updates></UpdateList>
         </v-card-text>
         <v-card-actions class="pt-2 pb-4 pr-6" :style="{ fontFamily: 'Poor Story' }">
           <span></span>
@@ -79,6 +79,7 @@
 import { mapState, mapActions } from 'vuex'
 import UpdateList from '@/components/common/UpdateList'
 import { router } from '@/routes/index'
+import FirebaseService from '@/services/FirebaseService'
 
 export default {
   name: 'Header',
@@ -89,14 +90,19 @@ export default {
     return {
       logoutDialog: this.$store.state.logoutDialog,
       dropDownOn: false,
-      developDialog: false
+      developDialog: false,
+      updates: []
     }
   },
-  mounted() {
+  created() {
+    this.getUpdates()
     this.resetSessionExpire()
   },
 	methods: {
     ...mapActions(['loginWithGoogle', 'logout']),
+    async getUpdates() {
+      this.updates = await FirebaseService.getUpdates()
+    },
     runLogout() {
       this.logout(0)
       this.logoutDialog = false
