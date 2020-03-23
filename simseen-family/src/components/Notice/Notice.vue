@@ -67,6 +67,9 @@
                   @click="clearImages">여기</v-chip>
               </div>
             </v-alert>
+            <v-alert type="error" class="pa-3" :style="{ fontSize: '14px', fontWeight: 500 }">
+              <span>사진 첨부 기능은 전반적으로 수정할 예정이니 업데이트 될 때까지 잠깐 사용하지 마시고 조금만 기다려주세요!</span>
+            </v-alert>
             <v-card-actions>
               <span class="alert-section">{{ waitingMessage }}</span>
               <v-spacer></v-spacer>

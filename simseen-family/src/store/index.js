@@ -65,7 +65,7 @@ export const store = new Vuex.Store({
       sessionStorage.removeItem('newTime')
       sessionStorage.setItem('newTime', new Date())
       let timeInterval = Date.parse(sessionStorage.getItem('newTime')) - Date.parse(sessionStorage.getItem('oldTime'))
-      let sessionExpireTime = 1800
+      let sessionExpireTime = 3600
       if (timeInterval < sessionExpireTime * 1000) {
         let newValue = sessionStorage.getItem('newTime')
         sessionStorage.removeItem('oldTime')

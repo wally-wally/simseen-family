@@ -10,23 +10,9 @@
 </template>
 
 <script>
-import FirebaseService from '@/services/FirebaseService'
-
 export default {
   name: 'UpdateList',
-  data() {
-    return {
-      updates: []
-    }
-  },
-  created() {
-    this.getUpdates()
-  },
-  methods: {
-    async getUpdates() {
-      this.updates = await FirebaseService.getUpdates()
-    }
-  }
+  props: ['updates']
 }
 </script>
 

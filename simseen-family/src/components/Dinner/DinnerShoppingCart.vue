@@ -1,28 +1,25 @@
 <template>
-  <div class="ma-4">
-    <div class="todo-title">
-      <i class="fas fa-list"></i>
-      <span class="success-rate pl-1" :style="{ color: successRate === 100 ? 'crimson' : 'black' }">(달성률 : {{ successRate }}[%])</span>
-    </div>
+  <div>
     <div class="todo-contents">
       <div class="todo-input">
-        <v-row v-if="todoItems.length < 5">
+        <v-row>
           <v-col cols="10" class="py-0 pl-4 pr-1">
             <v-text-field
               v-model="todo"
-              label="할 일(3자 이상 25자 이하로 작성 가능)"
+              label="1자 이상 20자 이하로 작성!"
               color="#E6CC00"
               :counter="0"
               :style="{ fontFamily: 'Poor Story' }">
             </v-text-field>
           </v-col>
           <v-col cols="2" :style="{ lineHeight: '70px', textAlign: 'center' }" class="py-0 pl-1 pr-4">
-            <v-btn small class="px-1" color="#E6CC00" :disabled="todo.length < 3 || todo.length > 25 ? true : false" :style="{ fontFamily: 'Poor Story' }" @click="selectTodo(todoItems.length)">추가</v-btn>
+            <v-btn small class="px-1" color="#E6CC00" :disabled="todo.length < 1 || todo.length > 20 ? true : false" :style="{ fontFamily: 'Poor Story' }" @click="selectTodo(todoItems.length)">추가</v-btn>
           </v-col>
         </v-row>
-        <div v-else class="full-todos">
-          <p>최대 5개 까지 저장할 수 있습니다.</p>
-        </div>
+      </div>
+      <div v-if="todoItems.length" class="delete-completed-items">
+        <v-btn x-small color="warning" dark id="delete-icon" :style="{ fontFamily: 'Poor Story' }" @click="removeCompletedDialog = true">구매한 품목 모두 삭제</v-btn>
+        <v-btn x-small color="error" dark id="delete-icon" :style="{ fontFamily: 'Poor Story' }" @click="allRemoveDialog = true">전체 삭제</v-btn>
       </div>
       <div class="todo-list-item">
         <v-list-item-group
@@ -54,15 +51,15 @@
           </template>
         </v-list-item-group>
         <div v-else class="full-todos">
-          <p v-if="loadingStatus" class="mb-6">데이터를 불러오는 중입니다.</p>
-          <p v-else class="mb-6">할 일을 등록해주세요.</p>
+          <p v-if="loadingStatus" class="mb-6">데이터를 불러오는 중 입니다.</p>
+          <p v-else class="mb-6">구매할 품목을 작성해주세요.</p>
         </div>
       </div>
       <v-dialog v-model="addDialog" persistent>
         <v-card>
           <v-card-text class="px-4 pt-4 pb-2" id="notice-card">
             <p class="text-center" style="font-size: 120px;"><i class="fas fa-plus"></i></p>
-            <p class="text-center" style="font-size: 1.2em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600; letter-spacing: -0.02em;">새로운 할 일을 추가하시겠습니까?</p>
+            <p class="text-center" style="font-size: 1.2em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600; letter-spacing: -0.02em;">새로운 품목을 추가하시겠습니까?</p>
             <p class="text-center" style="font-size: 0.9em; font-family: 'Noto Sans KR'">(하단 <span style="color: #FF5252;">'진행'</span> 버튼을 누르면 진행됩니다.)</p>
           </v-card-text>
           <v-divider></v-divider>
@@ -78,7 +75,7 @@
         <v-card>
           <v-card-text class="px-4 pt-4 pb-2" id="notice-card">
             <p class="text-center" style="font-size: 120px;"><i class="fas fa-trash-alt"></i></p>
-            <p class="text-center" style="font-size: 1.2em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">선택한 할 일을 삭제하시겠습니까?</p>
+            <p class="text-center" style="font-size: 1.2em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">선택한 품목을 삭제하시겠습니까?</p>
             <p class="text-center" style="font-size: 0.9em; font-family: 'Noto Sans KR'">(하단 <span style="color: #FF5252;">'진행'</span> 버튼을 누르면 진행됩니다.)</p>
           </v-card-text>
           <v-divider></v-divider>
@@ -90,6 +87,38 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="removeCompletedDialog" persistent>
+        <v-card>
+          <v-card-text class="px-4 pt-4 pb-2" id="notice-card">
+            <p class="text-center" style="font-size: 120px;"><i class="fas fa-trash-alt"></i></p>
+            <p class="text-center" style="font-size: 1.2em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">구매한 품목들을 삭제하시겠습니까?</p>
+            <p class="text-center" style="font-size: 0.9em; font-family: 'Noto Sans KR'">(하단 <span style="color: #FF5252;">'진행'</span> 버튼을 누르면 진행됩니다.)</p>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions class="pa-4" :style="{ fontFamily: 'Poor Story' }">
+            <span></span>
+            <v-spacer></v-spacer>
+            <v-btn small color="error" @click="deleteCompletedItems">진행</v-btn>
+            <v-btn small color="#E6CC00" @click="removeCompletedDialog = false">닫기</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="allRemoveDialog" persistent>
+        <v-card>
+          <v-card-text class="px-4 pt-4 pb-2" id="notice-card">
+            <p class="text-center" style="font-size: 120px;"><i class="fas fa-trash-alt"></i></p>
+            <p class="text-center" style="font-size: 1.2em; font-family: 'Noto Sans KR', sans-serif; font-weight: 600;">모든 품목을 삭제하시겠습니까?</p>
+            <p class="text-center" style="font-size: 0.9em; font-family: 'Noto Sans KR'">(하단 <span style="color: #FF5252;">'진행'</span> 버튼을 누르면 진행됩니다.)</p>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions class="pa-4" :style="{ fontFamily: 'Poor Story' }">
+            <span></span>
+            <v-spacer></v-spacer>
+            <v-btn small color="error" @click="allDeleteItems">진행</v-btn>
+            <v-btn small color="#E6CC00" @click="allRemoveDialog = false">닫기</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </div>
 </template>
@@ -98,15 +127,16 @@
 import FirebaseService from '@/services/FirebaseService'
 
 export default {
-  name: 'TodoList',
+  name: 'DinnerShoppingCart',
   data() {
     return {
-      userEmail: this.$store.state.email.split('@')[0],
       todoItems: [],
       todo: '',
       completedItems: [],
       addDialog: false,
       removeDialog: false,
+      removeCompletedDialog: false,
+      allRemoveDialog: false,
       selectTodoIndex: 0,
       init: 1,
       loadingStatus: 1,
@@ -114,12 +144,7 @@ export default {
     }
   },
   created() {
-    this.getTodos()
-  },
-  computed: {
-    successRate() {
-      return this.todoItems.length ? Math.round((this.completedItems.length / this.todoItems.length)*100) : 0
-    }
+    this.getShoppingCart()
   },
   mounted() {
     window.addEventListener('orientationchange', () => {
@@ -128,8 +153,9 @@ export default {
     })
   },
   methods: {
-    async getTodos() {
-      this.todoItems = await FirebaseService.getTodos(this.userEmail)
+    async getShoppingCart() {
+      let getData = await FirebaseService.getShoppingCart()
+      this.todoItems = getData.shoppingcart
       if (this.init) {
         let vm = this
         for (let i = 0; i < vm.todoItems.length; i++) {
@@ -156,7 +182,7 @@ export default {
           item: this.todo
         }
         items.push(addItems)
-        FirebaseService.postTodos(this.userEmail, items)
+        FirebaseService.postDinnerMemo(items, 0)
         this.addDialog = false
         this.todo = ''
         this.init = 0
@@ -181,7 +207,7 @@ export default {
             deleteCheck = 1
           }
         })
-        FirebaseService.postTodos(this.userEmail, sendItems)
+        FirebaseService.postDinnerMemo(sendItems, 0)
         this.removeDialog = false
         this.init = 0
         this.todoItems = sendItems
@@ -200,6 +226,22 @@ export default {
           }, 0)
         }
       }
+    },
+    initCartForm() {
+      this.todo =  ''
+      this.completedItems = []
+      this.removeCompletedDialog = false
+    },
+    deleteCompletedItems() {
+      let revisedData = this.todoItems.filter(data => !data.completed)
+      this.todoItems = revisedData
+      this.initCartForm()
+      FirebaseService.postDinnerMemo(revisedData, 0)
+    },
+    allDeleteItems() {
+      this.todoItems = []
+      this.initCartForm()
+      FirebaseService.postDinnerMemo(this.todoItems, 0)
     },
     toggleCompletedItems(newValue, oldValue) {
       let longIdxCollection = []
@@ -236,23 +278,6 @@ export default {
 </script>
 
 <style scoped>
-  .todo-title {
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 8px;
-  }
-
-  .todo-title .fas::after {
-    content: ' 체크리스트';
-    font-family: 'Yeon Sung';
-  }
-
-  .success-rate {
-    content: ' 체크리스트';
-    font-size: 14px;
-    font-family: 'Yeon Sung';
-  }
-
   .full-todos {
     background-color: #F4F2DB;
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.05);
@@ -266,6 +291,16 @@ export default {
     line-height: 1.7em;
     letter-spacing: 0.5px;
     text-align: center;
+  }
+
+  .delete-completed-items {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.6em 0 0.4em;
+  }
+
+  .delete-completed-items > #delete-icon {
+    margin-left: 0.5em;
   }
 
   .completed-item {
