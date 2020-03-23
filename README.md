@@ -1,4 +1,4 @@
-# :family: Simseen Family Homepage <img src="https://img.shields.io/badge/public_ver-1.0-blue">    <img src="https://img.shields.io/badge/develop_ver-3.11-lightgrey">
+# :family: Simseen Family Homepage <img src="https://img.shields.io/badge/public_ver-1.1-blue">    <img src="https://img.shields.io/badge/develop_ver-3.12-lightgrey">
 
 <br>
 
